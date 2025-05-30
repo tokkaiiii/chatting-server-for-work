@@ -17,6 +17,8 @@ public record ClientSignupController() {
       return ResponseEntity.badRequest().build();
     } else if (command.username().matches(USERNAME_REGEX) == false) {
       return ResponseEntity.badRequest().build();
+    }else if (command.password() == null) {
+      return ResponseEntity.badRequest().build();
     }
 
     return ResponseEntity.created(null).build();

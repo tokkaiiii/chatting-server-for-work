@@ -84,4 +84,26 @@ class POST_specs {
     // Assert
     assertThat(response.getStatusCode().value()).isEqualTo(400);
   }
+
+  @DisplayName("비밀번호 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다")
+  @Test
+  void 비밀번호_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
+      @Autowired TestRestTemplate client
+  ) {
+    // Arrange
+    var command = new CreateClientCommand(
+        "유저이름",
+        null
+    );
+
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        command,
+        Void.class
+    );
+
+    // Assert
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
+  }
 }
