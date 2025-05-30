@@ -106,4 +106,28 @@ class POST_specs {
     // Assert
     assertThat(response.getStatusCode().value()).isEqualTo(400);
   }
+
+  @DisplayName("비밀번호 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다")
+  @ParameterizedTest
+  @MethodSource("com.chat.chattingserverapp.utils.TestDataSource#invalidPasswords")
+  void 비밀번호_속성이_올바른_형식을_따르지_않으면_400_Bad_Request_상태코드를_반환한다(
+      String invalidPassword,
+      @Autowired TestRestTemplate client
+  ) {
+    // Arrange
+    var command = new CreateClientCommand(
+        "유저이름",
+        invalidPassword
+    );
+
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        command,
+        Void.class
+    );
+
+    // Assert
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
+  }
 }
