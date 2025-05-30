@@ -1,6 +1,7 @@
 package com.chat.chattingserverapp.client.controller;
 
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
+import com.chat.chattingserverapp.client.response.ClientResponse;
 import com.chat.chattingserverapp.client.service.ClientService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +23,18 @@ public record ClientSignupController(
       return ResponseEntity.badRequest().build();
     } else if (command.username().matches(USERNAME_REGEX) == false) {
       return ResponseEntity.badRequest().build();
-    }else if (command.password() == null) {
+    } else if (command.password() == null) {
       return ResponseEntity.badRequest().build();
-    }else if (command.password().length() < 8) {
+    } else if (command.password().length() < 8) {
       return ResponseEntity.badRequest().build();
     }
 
     try {
-      clientService.register(command);
-    }catch (DataIntegrityViolationException e){
+      var register = clientService.register(command);
+      return ResponseEntity.created(null).body(register);
+    } catch (DataIntegrityViolationException e) {
       return ResponseEntity.badRequest().build();
     }
-
-
-    return ResponseEntity.created(null).build();
   }
 
 }

@@ -3,6 +3,7 @@ package com.chat.chattingserverapp.client.service;
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
 import com.chat.chattingserverapp.client.response.ClientResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class ClientServiceAdapter implements ClientService{
   public ClientResponse register(CreateClientCommand command) {
     String hashedPassword = passwordEncoder.encode(command.password());
     return clientRepository.save(command.toClient(hashedPassword))
-        .map(client -> new ClientResponse(client.getUsername()))
+        .map(client -> new ClientResponse(client.getUsername(), client.getCreatedAt()))
         .orElseThrow(() -> new RuntimeException("Failed to register client"));
   }
 }

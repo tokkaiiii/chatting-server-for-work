@@ -7,6 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +25,9 @@ public class Client {
   private String username;
 
   private String hashedPassword;
+
+  @Getter
+  private final LocalDateTime createdAt = LocalDateTime.now();
 
   private Client(String username, String hashedPassword) {
     this.username = username;

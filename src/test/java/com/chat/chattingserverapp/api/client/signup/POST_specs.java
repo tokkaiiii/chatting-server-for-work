@@ -8,6 +8,9 @@ import com.chat.chattingserverapp.api.ChattingApiTest;
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
+import com.chat.chattingserverapp.client.response.ClientResponse;
+import java.time.LocalDateTime;
+import org.assertj.core.api.LocalDateTimeAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -192,5 +195,52 @@ class POST_specs {
     // Assert
     assertThat(clientUser.decodePassword(encoder, command.password()))
         .isTrue();
+  }
+  
+  @DisplayName("사용자 이름을 반환한다")
+  @Test
+  void 사용자_이름을_반환한다(
+      @Autowired TestRestTemplate client
+  ){
+    // Arrange
+    var command = new CreateClientCommand(
+        generateUsername(),
+        generatePassword()
+    );
+    
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        command,
+        ClientResponse.class
+    );
+    
+    // Assert
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().username()).isEqualTo(command.username());
+  }
+  
+  @DisplayName("생성일시를 반환한다.")
+  @Test
+  void 생성일시를_반환한다(
+      @Autowired TestRestTemplate client
+  ){
+    // Arrange
+    var command = new CreateClientCommand(
+        generateUsername(),
+        generatePassword()
+    );
+    
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        command,
+        ClientResponse.class
+    );
+    
+    // Assert
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().createdAt()).isNotNull();
+    assertThat(response.getBody().createdAt()).isInstanceOf(LocalDateTime.class);
   }
 }
