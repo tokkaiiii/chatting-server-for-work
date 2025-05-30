@@ -1,9 +1,10 @@
 package com.chat.chattingserverapp.api.client.signup;
 
+import static com.chat.chattingserverapp.utils.PasswordGenerator.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.chat.chattingserverapp.api.ChattingApiTest;
-import com.chat.chattingserverapp.command.CreateClientCommand;
+import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -124,6 +125,36 @@ class POST_specs {
     var response = client.postForEntity(
         "/client/signup",
         command,
+        Void.class
+    );
+
+    // Assert
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
+  }
+
+  @DisplayName("사용자 이름 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다")
+  @Test
+  void 사용자_이름_속성이_중복되면_400_Bad_Request_상태코드를_반환한다(
+      @Autowired TestRestTemplate client
+  ) {
+    // Arrange
+    String username = "유저이름";
+    client.postForEntity(
+        "/client/signup",
+        new CreateClientCommand(
+            username,
+            generatePassword()
+        ),
+        Void.class
+    );
+
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        new CreateClientCommand(
+            username,
+            generatePassword()
+        ),
         Void.class
     );
 
