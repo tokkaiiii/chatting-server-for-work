@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class UsernameGenerator {
   public static String generateUsername() {
-    return "유저" + new Random().nextInt(100);
+    return "유저" + System.currentTimeMillis();
   }
 
 }

@@ -26,6 +26,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/error").permitAll()
             .requestMatchers("/client/signup").permitAll()
+            .requestMatchers("/client/login").permitAll()
         )
 
     ;

@@ -45,6 +45,7 @@ curl -i -X POST 'http://localhost:8080/api/users' \
 - 상태코드: `201 Created`
 ```json
 {
+  "id": "사용자 ID",
   "username": "사용자 이름",
   "createdAt": "생성일시"
 }
@@ -63,6 +64,7 @@ curl -i -X POST 'http://localhost:8080/api/users' \
 - [x] 비밀번호 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 사용자 이름 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 비밀번호를 올바르게 암호화한다.
+- [ ] 사용자 ID를 반환한다.
 - [x] 사용자 이름을 반환한다.
 - [x] 생성일시를 반환한다.
 
@@ -71,17 +73,56 @@ curl -i -X POST 'http://localhost:8080/api/users' \
 요청
 
 - 메서드: `POST`
-- URL: `/api/users/login`
+- URL: `/client/login`
 - 헤더: `Content-Type: application/json`
 - 본문
-
 ```
-LoginUserCommand {
-  "name": "사용자 이름",
+LoginClientCommand {
+  "username": "사용자 이름",
   "password": "비밀번호"
 }
 
 ```
+- curl 명령 예시
+
+```bash
+curl -i -X POST 'http://localhost:8080/api/users/login' \
+-H 'Content-Type: application/json' \
+-d '{
+  "username": "사용자 이름"
+  "password": "비밀번호"
+}'
+```
+성공 응답
+- 상태코드: `200 OK`
+```json
+{
+  "id": "사용자 ID",
+  "username": "사용자 이름",
+  "createdAt": "생성일시"
+}
+```
+정책
+- 비밀번호는 암호화되어 저장되어 있다.
+- 로그인 시 사용자 ID와 사용자 이름을 반환한다.
+- 로그인 시 사용자 ID는 세션에 저장된다.
+- 로그인 시 사용자 이름은 세션에 저장된다.
+- 로그인 시 세션에 사용자 ID와 사용자 이름이 저장되어야 한다.
+- 로그인 시 세션에 사용자 ID와 사용자 이름이 저장되어 있지 않으면 `401 Unauthorized` 상태코드를 반환한다.
+- 로그인 시 세션에 사용자 ID와 사용자 이름이 저장되어 있으면 `200 OK` 상태코드를 반환한다.
+
+테스트
+- [x] 올바르게 요청하면 `200 OK` 상태코드를 반환한다.
+- [x] 사용자 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [x] 사용자 이름 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [x] 비밀번호 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [x] 비밀번호 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [x] 사용자 이름이 존재하지 않으면 `401 Unauthorized` 상태코드를 반환한다.
+- [x] 비밀번호가 일치하지 않으면 `401 Unauthorized` 상태코드를 반환한다.
+- [x] 로그인 시 사용자 ID를 반환한다.
+- [x] 로그인 시 사용자 이름을 반환한다.
+- [x] 로그인 시 생성일시를 반환한다.
+
 
 ### 로그아웃
 

@@ -10,7 +10,6 @@ import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
 import com.chat.chattingserverapp.client.response.ClientResponse;
 import java.time.LocalDateTime;
-import org.assertj.core.api.LocalDateTimeAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -18,6 +18,7 @@ public class Client {
 
 
   @Id @GeneratedValue(strategy = IDENTITY)
+  @Getter
   private Long id;
 
   @Getter

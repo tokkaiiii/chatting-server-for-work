@@ -1,8 +1,10 @@
 package com.chat.chattingserverapp.client.controller;
 
+import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.*;
+
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
-import com.chat.chattingserverapp.client.response.ClientResponse;
 import com.chat.chattingserverapp.client.service.ClientService;
+import com.chat.chattingserverapp.client.validator.ClientPropertyValidator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,27 +16,20 @@ public record ClientSignupController(
     ClientService clientService
 ) {
 
-  public static final String USERNAME_REGEX = "^[가-힣0-9\\-_]{3,}$";
-
   @PostMapping("/client/signup")
   public ResponseEntity<?> signup(@RequestBody CreateClientCommand command) {
 
-    if (command.username() == null) {
-      return ResponseEntity.badRequest().build();
-    } else if (command.username().matches(USERNAME_REGEX) == false) {
-      return ResponseEntity.badRequest().build();
-    } else if (command.password() == null) {
-      return ResponseEntity.badRequest().build();
-    } else if (command.password().length() < 8) {
+    if (!isCommandValid(command)) {
       return ResponseEntity.badRequest().build();
     }
 
-    try {
       var register = clientService.register(command);
       return ResponseEntity.created(null).body(register);
-    } catch (DataIntegrityViolationException e) {
-      return ResponseEntity.badRequest().build();
-    }
+  }
+
+  private static boolean isCommandValid(CreateClientCommand command) {
+    return isValidUsername(command.username())
+        && isValidPassword(command.password());
   }
 
 }
