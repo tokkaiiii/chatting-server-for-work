@@ -17,11 +17,6 @@ public record ClientSignupController(
 
   @PostMapping("/client/signup")
   public ResponseEntity<?> signup(@RequestBody CreateClientCommand command) {
-    try {
-    clientService.register(command);
-    }catch (DataIntegrityViolationException e){
-      return ResponseEntity.badRequest().build();
-    }
 
     if (command.username() == null) {
       return ResponseEntity.badRequest().build();
@@ -32,6 +27,13 @@ public record ClientSignupController(
     }else if (command.password().length() < 8) {
       return ResponseEntity.badRequest().build();
     }
+
+    try {
+      clientService.register(command);
+    }catch (DataIntegrityViolationException e){
+      return ResponseEntity.badRequest().build();
+    }
+
 
     return ResponseEntity.created(null).build();
   }

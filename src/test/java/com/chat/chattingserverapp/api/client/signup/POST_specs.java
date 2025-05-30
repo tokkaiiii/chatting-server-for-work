@@ -1,16 +1,20 @@
 package com.chat.chattingserverapp.api.client.signup;
 
-import static com.chat.chattingserverapp.utils.PasswordGenerator.*;
+import static com.chat.chattingserverapp.utils.PasswordGenerator.generatePassword;
+import static com.chat.chattingserverapp.utils.UsernameGenerator.generateUsername;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.chat.chattingserverapp.api.ChattingApiTest;
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
+import com.chat.chattingserverapp.client.domain.Client;
+import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ChattingApiTest
 @DisplayName("POST /client/signup")
@@ -26,7 +30,7 @@ class POST_specs {
     // Arrange
     var command = new CreateClientCommand(
         validUsername,
-        "password"
+        generatePassword()
     );
 
     // Act
@@ -48,7 +52,7 @@ class POST_specs {
     // Arrange
     var command = new CreateClientCommand(
         null,
-        "password"
+        generatePassword()
     );
 
     // Act
@@ -72,7 +76,7 @@ class POST_specs {
     // Arrange
     var command = new CreateClientCommand(
         invalidUsername,
-        "password"
+        generatePassword()
     );
 
     // Act
@@ -93,7 +97,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
-        "유저이름",
+        generateUsername(),
         null
     );
 
@@ -117,7 +121,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
-        "유저이름",
+        generateUsername(),
         invalidPassword
     );
 
@@ -138,7 +142,7 @@ class POST_specs {
       @Autowired TestRestTemplate client
   ) {
     // Arrange
-    String username = "유저이름";
+    String username = generateUsername();
     client.postForEntity(
         "/client/signup",
         new CreateClientCommand(
@@ -160,5 +164,33 @@ class POST_specs {
 
     // Assert
     assertThat(response.getStatusCode().value()).isEqualTo(400);
+  }
+
+  @DisplayName("비밀번호를 올바르게 암호화한다")
+  @Test
+  void 비밀번호를_올바르게_암호화한다(
+      @Autowired TestRestTemplate client,
+      @Autowired ClientRepository repository,
+  @Autowired PasswordEncoder encoder
+  ){
+    // Arrange
+    var command = new CreateClientCommand(
+        generateUsername(),
+        generatePassword()
+    );
+
+    client.postForEntity(
+        "/client/signup",
+        command,
+        Void.class
+    );
+
+    // Act
+    Client clientUser = repository.findByUsername(command.username())
+        .orElseThrow(() -> new IllegalStateException("Client not found"));
+
+    // Assert
+    assertThat(clientUser.decodePassword(encoder, command.password()))
+        .isTrue();
   }
 }

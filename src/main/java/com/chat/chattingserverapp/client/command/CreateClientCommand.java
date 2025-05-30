@@ -1,5 +1,7 @@
 package com.chat.chattingserverapp.client.command;
 
+import static com.chat.chattingserverapp.client.domain.Client.of;
+
 import com.chat.chattingserverapp.client.domain.Client;
 
 public record CreateClientCommand(
@@ -7,7 +9,7 @@ public record CreateClientCommand(
     String password
 ) {
 
-  public Client toClient() {
-    return Client.of(username);
+  public Client toClient(String hashedPassword) {
+    return of(username, hashedPassword);
   }
 }

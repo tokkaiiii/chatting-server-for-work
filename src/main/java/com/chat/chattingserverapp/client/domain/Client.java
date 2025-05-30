@@ -9,10 +9,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 public class Client {
+
 
   @Id @GeneratedValue(strategy = IDENTITY)
   private Long id;
@@ -21,12 +23,18 @@ public class Client {
   @Column(unique = true)
   private String username;
 
-  private Client(String username) {
+  private String hashedPassword;
+
+  private Client(String username, String hashedPassword) {
     this.username = username;
+    this.hashedPassword = hashedPassword;
   }
 
-  public static Client of(String username) {
-    return new Client(username);
+  public static Client of(String username, String hashedPassword) {
+    return new Client(username, hashedPassword);
   }
 
+  public boolean decodePassword(PasswordEncoder encoder,String password) {
+    return encoder.matches(password, this.hashedPassword);
+  }
 }
