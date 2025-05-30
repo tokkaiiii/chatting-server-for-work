@@ -196,6 +196,29 @@ class POST_specs {
         .isTrue();
   }
   
+  @DisplayName("사용자 ID를 반환한다")
+  @Test
+  void 사용자_ID를_반환한다(
+      @Autowired TestRestTemplate client
+  ){
+    // Arrange
+    var command = new CreateClientCommand(
+        generateUsername(),
+        generatePassword()
+    );
+    
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        command,
+        ClientResponse.class
+    );
+    
+    // Assert
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody().id()).isNotNull();
+  }
+  
   @DisplayName("사용자 이름을 반환한다")
   @Test
   void 사용자_이름을_반환한다(
