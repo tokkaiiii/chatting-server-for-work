@@ -6,6 +6,7 @@ import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.common.infrastructure.SpringDataClientRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -27,6 +28,11 @@ public class ClientRepositoryAdapter implements ClientRepository{
   @Override
   public List<Client> findAll() {
     return jpaClientRepository.findAll();
+  }
+
+  @Override
+  public Optional<Client> findById(UUID id) {
+    return jpaClientRepository.findById(id);
   }
 
 }

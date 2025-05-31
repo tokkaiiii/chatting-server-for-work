@@ -165,4 +165,36 @@ public class GET_specs {
     assertNotNull(response2.getBody());
     assertThat(response1.getBody().id()).isEqualTo(response2.getBody().id());
   }
+  
+  @DisplayName("사용자의 기본 정보가 올바르게 설정된다")
+  @Test
+  void 사용자의_기본_정보가_올바르게_설정된다(
+      @Autowired TestRestTemplate client
+  ){
+    // Arrange
+    String username = generateUsername();
+    String password = generatePassword();
+    var command = new CreateClientCommand(username, password);
+    client.postForEntity("/client/signup", command, Void.class);
+    AccessTokenCarrier carrier = client.postForObject(
+        "/client/issueToken",
+        new IssueClientToken(username, password),
+        AccessTokenCarrier.class
+    );
+    String token = carrier.accessToken();
+
+    // Act
+    ResponseEntity<ClientMeView> response = client.exchange(
+        get("/client/me")
+            .header("Authorization", "Bearer " + token)
+            .build(),
+        ClientMeView.class
+    );
+
+
+    // Assert
+    assertNotNull(response.getBody());
+    ClientMeView actual = response.getBody();
+    assertThat(actual.username()).isEqualTo(username);
+  }
 }

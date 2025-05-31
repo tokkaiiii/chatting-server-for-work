@@ -40,4 +40,10 @@ public class ClientServiceAdapter implements ClientService {
         .filter(client -> client.decodePassword(passwordEncoder, query.password()))
         .map(ClientResponse::from);
   }
+
+  @Override
+  public Optional<ClientResponse> findById(UUID id) {
+    return clientRepository.findById(id)
+        .map(ClientResponse::from);
+  }
 }
