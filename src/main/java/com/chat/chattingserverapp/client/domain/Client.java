@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,9 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Client {
 
 
-  @Id @GeneratedValue(strategy = IDENTITY)
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  private Long dataKey;
+
   @Getter
-  private Long id;
+  @Column(unique = true)
+  private UUID id;
 
   @Getter
   @Column(unique = true)
@@ -30,16 +35,17 @@ public class Client {
   @Getter
   private final LocalDateTime createdAt = LocalDateTime.now();
 
-  private Client(String username, String hashedPassword) {
+  private Client(UUID id, String username, String hashedPassword) {
+    this.id = id;
     this.username = username;
     this.hashedPassword = hashedPassword;
   }
 
-  public static Client of(String username, String hashedPassword) {
-    return new Client(username, hashedPassword);
+  public static Client of(UUID id, String username, String hashedPassword) {
+    return new Client(id, username, hashedPassword);
   }
 
-  public boolean decodePassword(PasswordEncoder encoder,String password) {
+  public boolean decodePassword(PasswordEncoder encoder, String password) {
     return encoder.matches(password, this.hashedPassword);
   }
 }

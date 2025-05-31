@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface ClientService {
 
-  ClientResponse register(CreateClientCommand command);
+  Optional<ClientResponse> register(CreateClientCommand command);
 
-  ClientResponse login(LoginClientCommand command);
+  Optional<ClientResponse> login(LoginClientCommand command);
 
   Optional<ClientResponse> findByUsername(IssueClientToken query);
 }

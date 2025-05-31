@@ -1,11 +1,10 @@
 package com.chat.chattingserverapp.client.controller;
 
-import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.*;
+import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidPassword;
+import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidUsername;
 
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.service.ClientService;
-import com.chat.chattingserverapp.client.validator.ClientPropertyValidator;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +22,8 @@ public record ClientSignupController(
       return ResponseEntity.badRequest().build();
     }
 
-      var register = clientService.register(command);
-      return ResponseEntity.created(null).body(register);
+    var register = clientService.register(command);
+    return ResponseEntity.created(null).body(register);
   }
 
   private static boolean isCommandValid(CreateClientCommand command) {

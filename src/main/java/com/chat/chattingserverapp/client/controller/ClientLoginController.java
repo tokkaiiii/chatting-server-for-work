@@ -4,11 +4,8 @@ import static com.chat.chattingserverapp.client.validator.ClientPropertyValidato
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidUsername;
 
 import com.chat.chattingserverapp.client.command.LoginClientCommand;
-import com.chat.chattingserverapp.client.response.ClientResponse;
 import com.chat.chattingserverapp.client.service.ClientService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,8 +21,9 @@ public record ClientLoginController(
       return ResponseEntity.badRequest().build();
     }
 
-    var response = clientService.login(command);
-    return ResponseEntity.ok(response);
+    return clientService.login(command)
+        .map(ResponseEntity::ok)
+        .orElseGet(() -> ResponseEntity.status(401).build());
   }
 
   private static boolean isCommandValid(LoginClientCommand command) {

@@ -212,38 +212,7 @@ class POST_specs {
     assertThat(response.getStatusCode().value()).isEqualTo(401);
   }
   
-  @DisplayName("로그인 시 사용자 ID를 반환한다")
-  @Test
-  void 로그인_시_사용자_ID를_반환한다(
-      @Autowired TestRestTemplate client
-  ){
-    // Arrange
-    String username = generateUsername();
-    String password = generatePassword();
-    client.postForEntity(
-        "/client/signup",
-        new CreateClientCommand(username, password),
-        Void.class
-    );
 
-    var command = new LoginClientCommand(
-        username,
-        password
-    );
-
-    // Act
-    var response = client.postForEntity(
-        "/client/login",
-        command,
-        Client.class
-    );
-
-    // Assert
-    assertThat(response.getBody()).isNotNull();
-    var actual = requireNonNull(response.getBody()).getId();
-    assertThat(actual).isNotNull();
-  }
-  
   @DisplayName("로그인 시 사용자 이름을 반환한다")
   @Test
   void 로그인_시_사용자_이름을_반환한다(

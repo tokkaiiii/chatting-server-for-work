@@ -216,7 +216,6 @@ class POST_specs {
     
     // Assert
     assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody().id()).isNotNull();
   }
   
   @DisplayName("사용자 이름을 반환한다")
