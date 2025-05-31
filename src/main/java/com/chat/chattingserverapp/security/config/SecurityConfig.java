@@ -27,6 +27,7 @@ public class SecurityConfig {
             .requestMatchers("/error").permitAll()
             .requestMatchers("/client/signup").permitAll()
             .requestMatchers("/client/login").permitAll()
+            .requestMatchers("/client/issueToken").permitAll()
         )
 
     ;
