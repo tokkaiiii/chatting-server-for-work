@@ -297,13 +297,13 @@ Authorization: Bearer {accessToken}
 요청
 
 - 메서드: `GET`
-- URL: `/api/rooms`
+- URL: `/chat/rooms`
 - 헤더: `Content-Type: application/json`
 - 본문 없음
 -
 
 ```
-GET /api/rooms
+GET /chat/rooms
 ```
 
 ### 채팅방 생성
@@ -311,13 +311,13 @@ GET /api/rooms
 요청
 
 - 메서드: `POST`
-- URL: `/api/rooms`
+- URL: `/chat/rooms`
 - 헤더: `Content-Type: application/json`
 - 본문
 
 ```
  CreateRoomCommand {
-  "name": "채팅방 이름"
+  "roomName": "채팅방 이름"
 }
 ```
 
@@ -330,6 +330,23 @@ GET /api/rooms
   "createdAt": "생성일시"
 }
 ```
+- curl 명령 예시
+
+```bash
+curl -i -X POST 'http://localhost:8080/chat/rooms' \
+-H 'Content-Type: application/json' \
+-d '{
+  "roomName": "채팅방 이름"
+}'
+```
+
+테스트
+- [x] 올바르게 요청하면 `201 Created` 상태코드를 반환한다
+- [x] 접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다
+- [x] 채팅방 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [x] 채팅방 이름 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다
+- [x] 채팅방 이름을 반환한다
+- [ ] 채팅방 생성일시를 반환한다
 
 ### 채팅방 입장
 
@@ -343,7 +360,7 @@ GET /api/rooms
 
 ```json
 {
-  "name": "사용자 이름"
+  "username": "사용자 이름"
 }
 ```
 

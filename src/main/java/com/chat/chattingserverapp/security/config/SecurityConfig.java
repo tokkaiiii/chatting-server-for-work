@@ -48,6 +48,7 @@ public class SecurityConfig {
             .requestMatchers("/client/login").permitAll()
             .requestMatchers("/client/issueToken").permitAll()
             .requestMatchers("/client/me").authenticated()
+            .requestMatchers("/chat/rooms").authenticated()
         )
 
     ;
