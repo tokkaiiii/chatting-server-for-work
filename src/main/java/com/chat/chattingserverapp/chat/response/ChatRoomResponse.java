@@ -3,7 +3,7 @@ package com.chat.chattingserverapp.chat.response;
 import com.chat.chattingserverapp.chat.domain.ChatRoom;
 
 public record ChatRoomResponse(
-    Long id,
+    Long chatRoomId,
     String roomName
 ) {
 

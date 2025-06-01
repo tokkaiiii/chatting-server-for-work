@@ -2,7 +2,6 @@ package com.chat.chattingserverapp.client.controller;
 
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isEmailValid;
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidPassword;
-import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidUsername;
 
 import com.chat.chattingserverapp.client.command.LoginClientCommand;
 import com.chat.chattingserverapp.client.service.ClientService;
