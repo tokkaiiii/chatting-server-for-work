@@ -1,26 +1,30 @@
 package com.chat.chattingserverapp.chat.service;
 
-import com.chat.chattingserverapp.chat.command.ChatRoomCreateCommand;
+import com.chat.chattingserverapp.chat.domain.ChatRoom;
 import com.chat.chattingserverapp.chat.infrastructure.ChatRoomRepository;
-import com.chat.chattingserverapp.chat.response.ChatRoomResponse;
+import com.chat.chattingserverapp.chat.infrastructure.MessageRepository;
 import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChatRoomServiceAdapter implements ChatRoomService {
+public class MessageServiceAdapter implements MessageService {
 
   private final ChatRoomRepository chatRoomRepository;
+  private final MessageRepository messageRepository;
   private final ClientRepository clientRepository;
 
   @Override
-  public Optional<ChatRoomResponse> createChatRoom(ChatRoomCreateCommand command, UUID clientId) {
-    return chatRoomRepository.save(command.toChatRoom(getClientFrom(clientId)))
-        .map(ChatRoomResponse::from);
+  public void send(UUID clientId, Long chatRoomId, String message) {
+    messageRepository.send(getClientFrom(clientId), getChatRoomFrom(chatRoomId), message);
+  }
+
+  private ChatRoom getChatRoomFrom(Long chatRoomId) {
+    return chatRoomRepository.findById(chatRoomId)
+        .orElseThrow(() -> new IllegalArgumentException("Chat room not found: " + chatRoomId));
   }
 
   private Client getClientFrom(UUID clientId) {

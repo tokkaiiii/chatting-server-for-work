@@ -1,6 +1,16 @@
 package com.chat.chattingserverapp.utils;
 
-public class TestDataSource {
+public abstract class TestDataSource {
+
+  public static String[] invalidEmails() {
+    return new String[]{
+        "invalid-email",
+        "invalid-email@",
+        "invalid-email@test",
+        "invalid-email@test.",
+        "invalid-email@.com"
+    };
+  }
 
   public static String[] invalidUsernames() {
     return new String[]{

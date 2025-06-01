@@ -26,6 +26,10 @@ public class Client {
   @Column(unique = true)
   private UUID id;
 
+  @Column(unique = true)
+  @Getter
+  private String email;
+
   @Getter
   @Column(unique = true)
   private String username;
@@ -35,14 +39,15 @@ public class Client {
   @Getter
   private final LocalDateTime createdAt = LocalDateTime.now();
 
-  private Client(UUID id, String username, String hashedPassword) {
+  private Client(UUID id, String email, String username, String hashedPassword) {
     this.id = id;
+    this.email = email;
     this.username = username;
     this.hashedPassword = hashedPassword;
   }
 
-  public static Client of(UUID id, String username, String hashedPassword) {
-    return new Client(id, username, hashedPassword);
+  public static Client of(UUID id, String email, String username, String hashedPassword) {
+    return new Client(id, email, username, hashedPassword);
   }
 
   public boolean decodePassword(PasswordEncoder encoder, String password) {

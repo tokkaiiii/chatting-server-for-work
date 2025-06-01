@@ -1,5 +1,6 @@
 package com.chat.chattingserverapp.api.client.signup;
 
+import static com.chat.chattingserverapp.utils.EmailGenerator.generateEmail;
 import static com.chat.chattingserverapp.utils.PasswordGenerator.generatePassword;
 import static com.chat.chattingserverapp.utils.UsernameGenerator.generateUsername;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,13 +10,16 @@ import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
 import com.chat.chattingserverapp.client.response.ClientResponse;
+import com.chat.chattingserverapp.utils.TestFixture;
 import java.time.LocalDateTime;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ChattingApiTest
@@ -31,6 +35,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(), // Assuming email is generated here
         validUsername,
         generatePassword()
     );
@@ -53,6 +58,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(), // Assuming email is generated here
         null,
         generatePassword()
     );
@@ -77,6 +83,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(), // Assuming email is generated here
         invalidUsername,
         generatePassword()
     );
@@ -99,6 +106,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(), // Assuming email is generated here
         generateUsername(),
         null
     );
@@ -123,6 +131,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(), // Assuming email is generated here
         generateUsername(),
         invalidPassword
     );
@@ -148,6 +157,7 @@ class POST_specs {
     client.postForEntity(
         "/client/signup",
         new CreateClientCommand(
+            generateEmail(), // Assuming email is generated here
             username,
             generatePassword()
         ),
@@ -158,6 +168,7 @@ class POST_specs {
     var response = client.postForEntity(
         "/client/signup",
         new CreateClientCommand(
+            generateEmail(), // Assuming email is generated here
             username,
             generatePassword()
         ),
@@ -177,6 +188,7 @@ class POST_specs {
   ){
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(), // Assuming email is generated here
         generateUsername(),
         generatePassword()
     );
@@ -203,6 +215,7 @@ class POST_specs {
   ){
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(),
         generateUsername(),
         generatePassword()
     );
@@ -225,6 +238,7 @@ class POST_specs {
   ){
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(),
         generateUsername(),
         generatePassword()
     );
@@ -248,6 +262,7 @@ class POST_specs {
   ){
     // Arrange
     var command = new CreateClientCommand(
+        generateEmail(),
         generateUsername(),
         generatePassword()
     );
@@ -263,5 +278,80 @@ class POST_specs {
     assertThat(response.getBody()).isNotNull();
     assertThat(response.getBody().createdAt()).isNotNull();
     assertThat(response.getBody().createdAt()).isInstanceOf(LocalDateTime.class);
+  }
+
+
+  @DisplayName("이메일 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다")
+  @Test
+  void 이메일_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
+      @Autowired TestRestTemplate client
+  ) {
+    // Arrange
+    String username = generateUsername();
+    String password = generatePassword();
+
+    // Act
+    var response = client.postForEntity(
+        "/client/signup",
+        new CreateClientCommand(null, username, password), // 이메일이 null로 설정됨
+        Void.class
+    );
+
+    // Assert
+    AssertionsForClassTypes.assertThat(response.getStatusCode().value()).isEqualTo(400);
+  }
+
+  @DisplayName("이메일 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다")
+  @ParameterizedTest
+  @MethodSource("com.chat.chattingserverapp.utils.TestDataSource#invalidEmails")
+  void 이메일_속성이_올바른_형식을_따르지_않으면_400_Bad_Request_상태코드를_반환한다(
+      String invalidEmail,
+      @Autowired TestFixture fixture
+  ){
+    // Arrange
+    String username = generateUsername();
+    String password = generatePassword();
+
+    var command = new CreateClientCommand(
+        invalidEmail,
+        username,
+        password
+    );
+
+    // Act
+    ResponseEntity<Void> response = fixture.client().postForEntity(
+        "/client/signup",
+        command,
+        Void.class
+    );
+
+    // Assert
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
+  }
+  
+  @DisplayName("이메일 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다")
+  @Test
+  void 이메일_속성이_중복되면_400_Bad_Request_상태코드를_반환한다(
+      @Autowired TestFixture fixture
+  ){
+    // Arrange
+    String email = generateEmail();
+
+    fixture.createClient(email,generateUsername(),generatePassword());
+    var command = new CreateClientCommand(
+        email,
+        generateUsername(),
+        generatePassword()
+    );
+
+    // Act
+    ResponseEntity<Void> response = fixture.client().postForEntity(
+        "/client/signup",
+        command,
+        Void.class
+    );
+
+    // Assert
+    assertThat(response.getStatusCode().value()).isEqualTo(400);
   }
 }

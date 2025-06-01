@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Target(TYPE)
 @Retention(RUNTIME)
 @SpringBootTest(
-    classes = ChattingServerAppApplication.class,
+    classes = {ChattingServerAppApplication.class, TestFixtureConfig.class},
     webEnvironment = RANDOM_PORT
 )
 public @interface ChattingApiTest {

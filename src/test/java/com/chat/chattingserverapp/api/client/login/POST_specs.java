@@ -1,17 +1,15 @@
 package com.chat.chattingserverapp.api.client.login;
 
+import static com.chat.chattingserverapp.utils.EmailGenerator.generateEmail;
 import static com.chat.chattingserverapp.utils.PasswordGenerator.generatePassword;
 import static com.chat.chattingserverapp.utils.UsernameGenerator.generateUsername;
-import static java.util.Objects.*;
-import static java.util.Optional.of;
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.BDDMockito.given;
 
 import com.chat.chattingserverapp.api.ChattingApiTest;
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.command.LoginClientCommand;
 import com.chat.chattingserverapp.client.domain.Client;
-import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.Assert;
 
 @ChattingApiTest
 @DisplayName("POST /client/login")
@@ -32,16 +29,18 @@ class POST_specs {
       @Autowired TestRestTemplate client
   ) {
 
+    String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
 
     client.postForEntity(
         "/client/signup",
-        new CreateClientCommand(username, password),
+        new CreateClientCommand(email, username, password),
         Void.class
     );
     // Arrange
     var command = new LoginClientCommand(
+        email,
         username,
         password
     );
@@ -64,6 +63,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new LoginClientCommand(
+        generateEmail(),
         null,
         generatePassword()
     );
@@ -88,6 +88,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new LoginClientCommand(
+        generateEmail(),
         username,
         generatePassword()
     );
@@ -110,6 +111,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new LoginClientCommand(
+        generateEmail(),
         generateUsername(),
         null
     );
@@ -134,6 +136,7 @@ class POST_specs {
   ) {
     // Arrange
     var command = new LoginClientCommand(
+        generateEmail(),
         generateUsername(),
         password
     );
@@ -155,16 +158,18 @@ class POST_specs {
       @Autowired TestRestTemplate client
   ) {
     // Arrange
+    String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
 
     client.postForEntity(
         "/client/signup",
-        new CreateClientCommand(username, password),
+        new CreateClientCommand(email, username, password),
         Void.class
     );
 
     var command = new LoginClientCommand(
+        generateEmail(),
         "잘못된" + username,
         password
     );
@@ -179,25 +184,27 @@ class POST_specs {
     // Assert
     assertThat(response.getStatusCode().value()).isEqualTo(401);
   }
-  
+
   @DisplayName("비밀번호가 일치하지 않으면 `401 Unauthorized` 상태코드를 반환한다")
   @Test
   void 비밀번호가_일치하지_않으면_401_Unauthorized_상태코드를_반환한다(
       @Autowired TestRestTemplate client,
       @Autowired PasswordEncoder passwordEncoder
-  ){
+  ) {
     // Arrange
+    String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
     String wrongPassword = generatePassword();
     client.postForEntity(
         "/client/signup",
-        new CreateClientCommand(username, password),
+        new CreateClientCommand(email, username, password),
         Void.class
     );
-    
+
     // Act
     var command = new LoginClientCommand(
+        generateEmail(),
         username,
         wrongPassword
     );
@@ -207,26 +214,28 @@ class POST_specs {
         command,
         Void.class
     );
-    
+
     // Assert
     assertThat(response.getStatusCode().value()).isEqualTo(401);
   }
-  
+
 
   @DisplayName("로그인 시 사용자 이름을 반환한다")
   @Test
   void 로그인_시_사용자_이름을_반환한다(
       @Autowired TestRestTemplate client
-  ){
+  ) {
     // Arrange
+    String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
     client.postForEntity(
         "/client/signup",
-        new CreateClientCommand(username, password),
+        new CreateClientCommand(email, username, password),
         Void.class
     );
     var command = new LoginClientCommand(
+        email,
         username,
         password
     );
@@ -237,7 +246,7 @@ class POST_specs {
         command,
         Client.class
     );
-    
+
     // Assert
     assertThat(response.getBody()).isNotNull();
     var actual = requireNonNull(response.getBody()).getUsername();
@@ -248,16 +257,18 @@ class POST_specs {
   @Test
   void 로그인_시_생성일시를_반환한다(
       @Autowired TestRestTemplate client
-  ){
+  ) {
     // Arrange
+    String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
     client.postForEntity(
         "/client/signup",
-        new CreateClientCommand(username, password),
+        new CreateClientCommand(email, username, password),
         Void.class
     );
     var command = new LoginClientCommand(
+        email,
         username,
         password
     );

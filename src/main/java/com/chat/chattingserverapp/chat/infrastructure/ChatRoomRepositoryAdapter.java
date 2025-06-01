@@ -17,4 +17,9 @@ public class ChatRoomRepositoryAdapter implements ChatRoomRepository{
   public Optional<ChatRoom> save(ChatRoom chatRoom) {
     return of(jpaChatRoomRepository.save(chatRoom));
   }
+
+  @Override
+  public Optional<ChatRoom> findById(Long id) {
+    return jpaChatRoomRepository.findById(id);
+  }
 }

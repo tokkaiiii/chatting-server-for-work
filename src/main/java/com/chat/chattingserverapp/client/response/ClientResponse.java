@@ -6,12 +6,13 @@ import java.util.UUID;
 
 public record ClientResponse(
     UUID id,
+    String email,
     String username,
     LocalDateTime createdAt
 ) {
 
   public ClientResponse {
-    if (id == null || username == null || createdAt == null) {
+    if (id == null || email == null || username == null || createdAt == null) {
       throw new IllegalArgumentException("Fields cannot be null");
     }
   }
@@ -19,6 +20,7 @@ public record ClientResponse(
   public static ClientResponse from(Client client) {
     return new ClientResponse(
         client.getId(),
+        client.getEmail(),
         client.getUsername(),
         client.getCreatedAt()
     );

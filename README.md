@@ -27,6 +27,7 @@
 
 ```
 CreateClientCommand {
+  "email": "test@example.com",
   "username": "사용자 이름",
   "password": "비밀번호"
 }
@@ -38,7 +39,8 @@ CreateClientCommand {
 curl -i -X POST 'http://localhost:8080/api/users' \
 -H 'Content-Type: application/json' \
 -d '{
-  "username: "사용자 이름",
+  "email: "test@example.com",
+  "username": "사용자 이름",
   "password": "비밀번호"
 }'
 ```
@@ -50,6 +52,7 @@ curl -i -X POST 'http://localhost:8080/api/users' \
 ```json
 {
   "id": "사용자 ID",
+  "email": "test@example.com",
   "username": "사용자 이름",
   "createdAt": "생성일시"
 }
@@ -57,18 +60,18 @@ curl -i -X POST 'http://localhost:8080/api/users' \
 
 정책
 
-- 사용자 이름은 유일해야 한다.
 - 비밀번호는 8자 이상의 문자로 구성되어야 한다.
-- 사용자 이름은 3자 이상의 한글, 숫자, 하이픈, 밑줄 문자로만 구성되어야 한다.
-- 사용자 이름은 영문자로 사용할 수 없다.
 
 테스트
 
 - [x] 올바르게 요청하면 `201 Created` 상태코드를 반환한다.
 - [x] 사용자 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 사용자 이름 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [x] 이메일 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [x] 이메일 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 비밀번호 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 비밀번호 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다.
+- [ ] 이메일 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 사용자 이름 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다.
 - [x] 비밀번호를 올바르게 암호화한다.
 - [x] 사용자 이름을 반환한다.
@@ -140,7 +143,7 @@ LoginClientCommand {
 - curl 명령 예시
 
 ```bash
-curl -i -X POST 'http://localhost:8080/api/users/login' \
+curl -i -X POST 'http://localhost:8080/client/login' \
 -H 'Content-Type: application/json' \
 -d '{
   "username": "사용자 이름"
@@ -221,6 +224,7 @@ Authorization: Bearer {accessToken}
   ```
 
 테스트
+
 - [x] 올바르게 요청하면 `200 OK` 상태코드를 반환한다
 - [x] 접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다
 - [x] 서로 다른 사용자의 식별자는 서로 다르다
@@ -316,7 +320,7 @@ GET /chat/rooms
 - 본문
 
 ```
- CreateRoomCommand {
+ ChatRoomCreateCommand {
   "roomName": "채팅방 이름"
 }
 ```
@@ -330,6 +334,7 @@ GET /chat/rooms
   "createdAt": "생성일시"
 }
 ```
+
 - curl 명령 예시
 
 ```bash
@@ -341,38 +346,13 @@ curl -i -X POST 'http://localhost:8080/chat/rooms' \
 ```
 
 테스트
+
 - [x] 올바르게 요청하면 `201 Created` 상태코드를 반환한다
 - [x] 접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다
 - [x] 채팅방 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
 - [x] 채팅방 이름 속성이 중복되면 `400 Bad Request` 상태코드를 반환한다
 - [x] 채팅방 이름을 반환한다
 - [ ] 채팅방 생성일시를 반환한다
-
-### 채팅방 입장
-
-요청
-
-- 메서드: `POST`
-- URL: `/api/rooms/{roomId}/join`
-- 헤더: `Content-Type: application/json`
-- 경로 변수: `roomId` (채팅방 ID)
-- 본문
-
-```json
-{
-  "username": "사용자 이름"
-}
-```
-
-- 성공 응답
-
-```json
-{
-  "id": "채팅방 ID",
-  "name": "채팅방 이름",
-  "createdAt": "생성일시"
-}
-```
 
 ### 채팅방 퇴장
 
@@ -403,14 +383,14 @@ curl -i -X POST 'http://localhost:8080/chat/rooms' \
 요청
 
 - 메서드: `POST`
-- URL: `/api/rooms/{roomId}/messages`
+- URL: `/chat/rooms/{roomId}/messages`
 - 헤더: `Content-Type: application/json`
 - 경로 변수: `roomId` (채팅방 ID)
 - 본문
 
-```json
-{
-  "name": "사용자 이름",
+```
+ChatMessageSendCommand {
+  "username": "사용자 이름",
   "message": "보낼 메시지"
 }
 ```
@@ -426,6 +406,25 @@ curl -i -X POST 'http://localhost:8080/chat/rooms' \
   "createdAt": "생성일시"
 }
 ```
+
+- curl 명령 예시
+
+```bash
+curl -i -X POST 'http://localhost:8080/chat/rooms/{roomId}/messages' \
+-H 'Content-Type: application/json' \
+-d '{
+  "name": "사용자 이름",
+  "message": "보낼 메시지"
+}'
+```
+
+테스트
+
+- [ ] 올바르게 요청하면 `200 ok` 상태코드를 반환한다
+- [ ] 접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다
+- [ ] 채팅방 ID가 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [ ] 사용자 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [ ] 메시지 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
 
 ### 채팅 메시지 조회
 

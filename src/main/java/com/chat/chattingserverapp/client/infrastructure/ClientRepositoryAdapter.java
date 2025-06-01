@@ -35,4 +35,9 @@ public class ClientRepositoryAdapter implements ClientRepository{
     return jpaClientRepository.findById(id);
   }
 
+  @Override
+  public Optional<Client> findByEmail(String email) {
+    return jpaClientRepository.findByEmail(email);
+  }
+
 }

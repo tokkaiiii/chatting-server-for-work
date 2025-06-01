@@ -22,7 +22,7 @@ public record ClientIssueTokenController(
   @PostMapping("/client/issueToken")
   public ResponseEntity<?> issueToken(@RequestBody IssueClientToken query) {
     return clientService
-        .findByUsername(query)
+        .findByEmail(query)
         .map(this::composeToken)
         .map(AccessTokenCarrier::new)
         .map(ResponseEntity::ok)

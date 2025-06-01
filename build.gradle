@@ -29,7 +29,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.security:spring-security-messaging'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -51,6 +53,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {

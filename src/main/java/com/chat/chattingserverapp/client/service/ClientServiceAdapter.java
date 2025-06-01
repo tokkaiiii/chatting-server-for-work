@@ -29,14 +29,14 @@ public class ClientServiceAdapter implements ClientService {
 
   @Override
   public Optional<ClientResponse> login(LoginClientCommand command) {
-    return clientRepository.findByUsername(command.username())
+    return clientRepository.findByEmail(command.email())
         .filter(client -> client.decodePassword(passwordEncoder, command.password()))
         .map(ClientResponse::from);
   }
 
   @Override
   public Optional<ClientResponse> findByUsername(IssueClientToken query) {
-    return clientRepository.findByUsername(query.username())
+    return clientRepository.findByUsername(query.email())
         .filter(client -> client.decodePassword(passwordEncoder, query.password()))
         .map(ClientResponse::from);
   }
@@ -45,5 +45,12 @@ public class ClientServiceAdapter implements ClientService {
   public Optional<ClientResponse> findById(UUID id) {
     return clientRepository.findById(id)
         .map(ClientResponse::from);
+  }
+
+  @Override
+  public Optional<ClientResponse> findByEmail(IssueClientToken query) {
+    return clientRepository.findByEmail(query.email())
+        .map(ClientResponse::from);
+
   }
 }

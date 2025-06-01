@@ -7,4 +7,6 @@ public interface ChatRoomRepository {
 
   Optional<ChatRoom> save(ChatRoom chatRoom);
 
+  Optional<ChatRoom> findById(Long id);
+
 }

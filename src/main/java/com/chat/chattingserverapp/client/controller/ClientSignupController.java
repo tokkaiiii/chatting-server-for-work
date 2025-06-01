@@ -1,5 +1,6 @@
 package com.chat.chattingserverapp.client.controller;
 
+import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isEmailValid;
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidPassword;
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidUsername;
 
@@ -27,7 +28,8 @@ public record ClientSignupController(
   }
 
   private static boolean isCommandValid(CreateClientCommand command) {
-    return isValidUsername(command.username())
+    return isEmailValid(command.email())
+        && isValidUsername(command.username())
         && isValidPassword(command.password());
   }
 

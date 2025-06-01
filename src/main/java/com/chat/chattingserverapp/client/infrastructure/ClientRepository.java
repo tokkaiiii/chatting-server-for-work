@@ -1,6 +1,7 @@
 package com.chat.chattingserverapp.client.infrastructure;
 
 import com.chat.chattingserverapp.client.domain.Client;
+import com.chat.chattingserverapp.client.response.ClientResponse;
 import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface ClientRepository {
   List<Client> findAll();
 
   Optional<Client> findById(UUID id);
+
+  Optional<Client> findByEmail(String email);
 }
