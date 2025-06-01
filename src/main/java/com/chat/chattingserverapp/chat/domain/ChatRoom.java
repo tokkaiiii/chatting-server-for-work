@@ -18,6 +18,7 @@ public class ChatRoom {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
+  @Getter
   private Long id;
 
   @Column(unique = true)
@@ -33,6 +34,7 @@ public class ChatRoom {
 
   private ChatRoom(String roomName, Client client) {
     this.roomName = roomName;
+    this.client = client;
   }
 
   public static ChatRoom of(String roomName, Client client) {

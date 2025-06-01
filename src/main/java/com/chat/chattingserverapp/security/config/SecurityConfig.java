@@ -57,7 +57,7 @@ public class SecurityConfig {
             .requestMatchers("/client/login").permitAll()
             .requestMatchers("/client/issueToken").permitAll()
             .requestMatchers("/ws-endpoint/**").permitAll()
-            .requestMatchers("/ws").permitAll()
+            .requestMatchers("/ws/**").permitAll()
             .anyRequest().authenticated()
         )
 

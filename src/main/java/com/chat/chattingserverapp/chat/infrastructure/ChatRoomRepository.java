@@ -1,6 +1,8 @@
 package com.chat.chattingserverapp.chat.infrastructure;
 
 import com.chat.chattingserverapp.chat.domain.ChatRoom;
+import com.chat.chattingserverapp.client.domain.Client;
+import java.util.List;
 import java.util.Optional;
 
 public interface ChatRoomRepository {
@@ -9,4 +11,5 @@ public interface ChatRoomRepository {
 
   Optional<ChatRoom> findById(Long id);
 
+  List<ChatRoom> findByClient(Client client);
 }

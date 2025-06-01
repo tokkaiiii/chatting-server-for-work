@@ -9,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
+import lombok.Getter;
 
 @Entity
 public class Message {
@@ -16,6 +18,8 @@ public class Message {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long id;
+
+  @Getter
   private String message;
 
   @JoinColumn(name = "sender_id")
@@ -25,6 +29,9 @@ public class Message {
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "chat_room_id")
   private ChatRoom chatRoom;
+
+  @Getter
+  private final LocalDateTime createdAt = LocalDateTime.now();
 
   protected Message() {
   }

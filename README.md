@@ -309,6 +309,20 @@ Authorization: Bearer {accessToken}
 ```
 GET /chat/rooms
 ```
+- 성공 응답
+```json
+{
+  "id": "채팅방 ID",
+  "roomName": "채팅방 이름",
+  "lastMessage": "안녕하세요",
+  "time": " ",
+  "unread": 1
+}
+```
+테스트
+- [x] 올바르게 요청하면 `200 ok` 상태코드를 반환한다
+- [x] 접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다
+- [ ] 채티방 목록을 반환한다
 
 ### 채팅방 생성
 

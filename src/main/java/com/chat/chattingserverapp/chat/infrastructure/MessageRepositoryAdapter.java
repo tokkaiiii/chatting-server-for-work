@@ -6,6 +6,7 @@ import com.chat.chattingserverapp.chat.domain.ChatRoom;
 import com.chat.chattingserverapp.chat.domain.Message;
 import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.common.infrastructure.SpringDataMessageRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -18,5 +19,10 @@ public class MessageRepositoryAdapter implements MessageRepository {
   @Override
   public void send(Client sender, ChatRoom chatRoom, String message) {
     jpaMessageRepository.save(of(message, sender, chatRoom));
+  }
+
+  @Override
+  public List<Message> findByChatRoom(ChatRoom chatRoom) {
+    return jpaMessageRepository.findByChatRoom(chatRoom);
   }
 }

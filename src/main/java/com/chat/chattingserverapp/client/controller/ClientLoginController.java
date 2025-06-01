@@ -1,15 +1,18 @@
 package com.chat.chattingserverapp.client.controller;
 
+import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isEmailValid;
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidPassword;
 import static com.chat.chattingserverapp.client.validator.ClientPropertyValidator.isValidUsername;
 
 import com.chat.chattingserverapp.client.command.LoginClientCommand;
 import com.chat.chattingserverapp.client.service.ClientService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 public record ClientLoginController(
     ClientService clientService
@@ -17,6 +20,8 @@ public record ClientLoginController(
 
   @PostMapping("/client/login")
   public ResponseEntity<?> login(@RequestBody LoginClientCommand command) {
+    log.info("login command: {}", command);
+
     if (!isCommandValid(command)) {
       return ResponseEntity.badRequest().build();
     }
@@ -27,7 +32,7 @@ public record ClientLoginController(
   }
 
   private static boolean isCommandValid(LoginClientCommand command) {
-    return isValidUsername(command.username())
+    return isEmailValid(command.email())
         && isValidPassword(command.password());
   }
 

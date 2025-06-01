@@ -41,7 +41,6 @@ class POST_specs {
     // Arrange
     var command = new LoginClientCommand(
         email,
-        username,
         password
     );
 
@@ -56,53 +55,8 @@ class POST_specs {
     assertThat(response.getStatusCode().value()).isEqualTo(200);
   }
 
-  @DisplayName("사용자 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다")
-  @Test
-  void 사용자_이름_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-      @Autowired TestRestTemplate client
-  ) {
-    // Arrange
-    var command = new LoginClientCommand(
-        generateEmail(),
-        null,
-        generatePassword()
-    );
 
-    // Act
-    var response = client.postForEntity(
-        "/client/login",
-        command,
-        Void.class
-    );
 
-    // Assert
-    assertThat(response.getStatusCode().value()).isEqualTo(400);
-  }
-
-  @DisplayName("사용자 이름 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다")
-  @ParameterizedTest
-  @MethodSource("com.chat.chattingserverapp.utils.TestDataSource#invalidUsernames")
-  void 사용자_이름_속성이_올바른_형식을_따르지_않으면_400_Bad_Request_상태코드를_반환한다(
-      String username,
-      @Autowired TestRestTemplate client
-  ) {
-    // Arrange
-    var command = new LoginClientCommand(
-        generateEmail(),
-        username,
-        generatePassword()
-    );
-
-    // Act
-    var response = client.postForEntity(
-        "/client/login",
-        command,
-        Void.class
-    );
-
-    // Assert
-    assertThat(response.getStatusCode().value()).isEqualTo(400);
-  }
 
   @DisplayName("비밀번호 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다")
   @Test
@@ -112,7 +66,6 @@ class POST_specs {
     // Arrange
     var command = new LoginClientCommand(
         generateEmail(),
-        generateUsername(),
         null
     );
 
@@ -137,7 +90,6 @@ class POST_specs {
     // Arrange
     var command = new LoginClientCommand(
         generateEmail(),
-        generateUsername(),
         password
     );
 
@@ -152,38 +104,7 @@ class POST_specs {
     assertThat(response.getStatusCode().value()).isEqualTo(400);
   }
 
-  @DisplayName("사용자 이름이 존재하지 않으면 `401 Unauthorized` 상태코드를 반환한다")
-  @Test
-  void 사용자_이름이_존재하지_않으면_401_Unauthorized_상태코드를_반환한다(
-      @Autowired TestRestTemplate client
-  ) {
-    // Arrange
-    String email = generateEmail();
-    String username = generateUsername();
-    String password = generatePassword();
 
-    client.postForEntity(
-        "/client/signup",
-        new CreateClientCommand(email, username, password),
-        Void.class
-    );
-
-    var command = new LoginClientCommand(
-        generateEmail(),
-        "잘못된" + username,
-        password
-    );
-
-    // Act
-    var response = client.postForEntity(
-        "/client/login",
-        command,
-        Void.class
-    );
-
-    // Assert
-    assertThat(response.getStatusCode().value()).isEqualTo(401);
-  }
 
   @DisplayName("비밀번호가 일치하지 않으면 `401 Unauthorized` 상태코드를 반환한다")
   @Test
@@ -205,7 +126,6 @@ class POST_specs {
     // Act
     var command = new LoginClientCommand(
         generateEmail(),
-        username,
         wrongPassword
     );
 
@@ -236,7 +156,6 @@ class POST_specs {
     );
     var command = new LoginClientCommand(
         email,
-        username,
         password
     );
 
@@ -269,7 +188,6 @@ class POST_specs {
     );
     var command = new LoginClientCommand(
         email,
-        username,
         password
     );
 
