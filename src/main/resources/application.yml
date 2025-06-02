@@ -4,3 +4,13 @@ security:
     secret: b7e2c1a2-4f3e-4b8a-9c1d-2e8f7a6b5c4d
 server:
   port: 38080
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    url: jdbc:h2:mem:db
+  h2:
+    console:
+      path: /h2-console
+      enabled: true

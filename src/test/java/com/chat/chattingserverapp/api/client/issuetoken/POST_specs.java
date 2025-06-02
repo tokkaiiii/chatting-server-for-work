@@ -71,17 +71,19 @@ public class POST_specs {
 
   @DisplayName("존재하지 않는 사용자명이 사용되면 400 Bad Request 상태코드를 반환한다")
   @Test
-  void 존재하지_않는_사용자명이_사용되면_400_Bad_Request_상태코드를_반환한다(
-      @Autowired TestRestTemplate client
+  void 존재하지_않는_이메일이_사용되면_400_Bad_Request_상태코드를_반환한다(
+      @Autowired TestFixture fixture
   ) {
     // Arrange
+    String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
+    fixture.createClient(email, username, password);
 
     // Act
-    var response = client.postForEntity(
+    var response = fixture.client().postForEntity(
         "/client/issueToken",
-        new IssueClientToken(username, password),
+        new IssueClientToken(generateEmail(), password),
         AccessTokenCarrier.class
     );
 
@@ -92,22 +94,17 @@ public class POST_specs {
   @DisplayName("잘못된 비밀번호가 사용되면 400 Bad Request 상태코드를 반환한다")
   @Test
   void 잘못된_비밀번호가_사용되면_400_Bad_Request_상태코드를_반환한다(
-      @Autowired TestRestTemplate client
+      @Autowired TestFixture fixture
   ) {
     // Arrange
     String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
     String wrongPassword = generatePassword();
-
-    client.postForEntity(
-        "/client/signup",
-        new CreateClientCommand(email, username, password),
-        Void.class
-    );
+    fixture.createClient(email, username, password);
 
     // Act
-    var response = client.postForEntity(
+    var response = fixture.client().postForEntity(
         "/client/issueToken",
         new IssueClientToken(username, wrongPassword),
         AccessTokenCarrier.class

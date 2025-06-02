@@ -1,85 +1,258 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Chat Room</title>
-  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+        .message-sent {
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 1rem 1rem 0 1rem;
+        }
+        .message-received {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border-radius: 1rem 1rem 1rem 0;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
 </head>
-<body>
-<h1>Chat Room</h1>
-<div>
-  <input type="text" id="messageInput" placeholder="Type a message..."/>
-  <button onclick="sendMessage()">Send</button>
-</div>
-<ul id="messages"></ul>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto p-4 h-screen flex flex-col">
+        <div class="bg-white rounded-lg shadow-lg flex-1 flex flex-col">
+            <!-- Header -->
+            <div class="p-4 border-b flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-500 rounded-full p-2">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-xl font-semibold" id="roomTitle">Chat Room</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="leaveRoomButton" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                        Leave Room
+                    </button>
+                    <a href="/view/chat/rooms" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors">
+                        Back to Rooms
+                    </a>
+                </div>
+            </div>
 
-<script type="text/javascript">
-  const username = '[[${username}]]'; // Thymeleaf에서 사용자명 주입
-  const roomId = '[[${roomId}]]'; // Thymeleaf에서 roomId 주입
+            <!-- Chat Container -->
+            <div class="flex-1 flex flex-col p-4">
+                <!-- Messages -->
+                <div id="messages" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 mb-4"></div>
 
-  // 토큰 발급 요청
-  fetch('/api/auth/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    const token = data.token;
-    connectWebSocket(token);
-  })
-  .catch(error => console.error('Error:', error));
+                <!-- Connection Status -->
+                <div id="connectionStatus" class="text-sm text-gray-500 mb-2">Connecting...</div>
 
-  function connectWebSocket(token) {
-    const stompClient = new StompJs.Client({
-      webSocketFactory: () => new SockJS('/ws-endpoint'),
-      connectHeaders: {
-        Authorization: 'Bearer ' + token
-      },
-      debug: function (str) {
-        console.log('[STOMP]', str);
-      },
-      onConnect: function (frame) {
-        console.log('✅ Connected:', frame);
+                <!-- Input Area -->
+                <div class="flex space-x-2">
+                    <textarea
+                        id="messageInput"
+                        class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        placeholder="Type your message..."
+                        rows="3"
+                    ></textarea>
+                    <button
+                        id="sendButton"
+                        class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center"
+                    >
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Send
+                    </button>
+                </div>
 
-        // 구독
-        stompClient.subscribe('/topic/room/' + roomId, function (message) {
-          const body = JSON.parse(message.body);
-          showMessage(body.sender + " : " + body.message);
+                <!-- Error Message -->
+                <div id="errorMessage" class="mt-2 text-red-500 hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script>
+        let stompClient = null;
+        let roomId = null;
+        let username = localStorage.getItem('username');
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/client/login';
+        }
+
+        // URL에서 채팅방 ID 가져오기
+        const pathParts = window.location.pathname.split('/');
+        roomId = pathParts[pathParts.length - 1];
+
+        // 채팅방 제목 설정
+        document.getElementById('roomTitle').textContent = `Chat Room ${roomId}`;
+
+        // 채팅방 나가기 버튼 이벤트 리스너
+        document.getElementById('leaveRoomButton').addEventListener('click', function() {
+            if (stompClient) {
+                stompClient.disconnect();
+            }
+            window.location.href = '/view/chat/rooms';
         });
-      },
-      onStompError: function (frame) {
-        console.error('❌ STOMP error', frame.headers['message'], frame.body);
-      },
-      onWebSocketError: function (event) {
-        console.error('❌ WebSocket error', event);
-      },
-      reconnectDelay: 5000,
-    });
 
-    stompClient.activate(); // 연결 시작
-  }
+        function connect() {
+            stompClient = new StompJs.Client({
+                webSocketFactory: () => new SockJS("http://localhost:38080/ws"),
+                debug: function(str) {
+                    console.log(str);
+                },
+                reconnectDelay: 5000,
+                heartbeatIncoming: 4000,
+                heartbeatOutgoing: 4000,
+                connectHeaders: {
+                    'Authorization': `Bearer ${token}`
+                },
+                onConnect: onConnected,
+                onStompError: onError
+            });
+            
+            stompClient.activate();
+        }
 
-  function sendMessage() {
-    const message = document.getElementById('messageInput').value;
-    stompClient.publish({
-      destination: "/app/send",
-      body: JSON.stringify({
-        chatRoomId: roomId,
-        sender: username,
-        message: message
-      })
-    });
-  }
+        function onConnected() {
+            document.getElementById('connectionStatus').textContent = 'Connected';
+            document.getElementById('connectionStatus').classList.add('text-green-500');
+            document.getElementById('connectionStatus').classList.remove('text-gray-500');
+            
+            stompClient.subscribe(`/topic/chat.room.${roomId}`, onMessageReceived);
+            loadPreviousMessages();
+        }
 
-  function showMessage(message) {
-    const messages = document.getElementById('messages');
-    const li = document.createElement('li');
-    li.textContent = message;
-    messages.appendChild(li);
-  }
-</script>
+        function onError(error) {
+            console.error('WebSocket Error:', error);
+            document.getElementById('connectionStatus').textContent = 'Disconnected';
+            document.getElementById('connectionStatus').classList.add('text-red-500');
+            document.getElementById('connectionStatus').classList.remove('text-gray-500');
+            document.getElementById('errorMessage').textContent = 'Failed to connect to chat server';
+            document.getElementById('errorMessage').classList.remove('hidden');
+            
+            setTimeout(connect, 5000);
+        }
+
+        function loadPreviousMessages() {
+            fetch(`/chat/rooms/${roomId}/messages`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load messages');
+                }
+                return response.json();
+            })
+            .then(messages => {
+                const messagesContainer = document.getElementById('messages');
+                messages.forEach(message => {
+                    appendMessage(message);
+                });
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error loading messages:', error);
+                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('errorMessage').classList.remove('hidden');
+            });
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message && stompClient) {
+                const chatMessage = {
+                    roomId: roomId,
+                    sender: username,
+                    content: message,
+                    type: 'CHAT'
+                };
+                
+                stompClient.publish({
+                    destination: "/app/chat.sendMessage",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(chatMessage)
+                });
+                
+                messageInput.value = '';
+            }
+        }
+
+        function onMessageReceived(payload) {
+            const message = JSON.parse(payload.body);
+            appendMessage(message);
+        }
+
+        function appendMessage(message) {
+            const messagesContainer = document.getElementById('messages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `flex ${message.sender === username ? 'justify-end' : 'justify-start'}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = `max-w-[70%] p-3 ${message.sender === username ? 'message-sent' : 'message-received'}`;
+            
+            const messageHeader = document.createElement('div');
+            messageHeader.className = 'text-xs opacity-70 mb-1';
+            messageHeader.textContent = `${message.sender} - ${new Date(message.timestamp).toLocaleString()}`;
+            
+            const messageText = document.createElement('div');
+            messageText.textContent = message.content;
+            
+            messageContent.appendChild(messageHeader);
+            messageContent.appendChild(messageText);
+            messageElement.appendChild(messageContent);
+            messagesContainer.appendChild(messageElement);
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 이벤트 리스너 설정
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 페이지 로드 시 WebSocket 연결
+        connect();
+
+        // 페이지 언로드 시 WebSocket 연결 해제
+        window.addEventListener('beforeunload', function() {
+            if (stompClient) {
+                stompClient.disconnect();
+            }
+        });
+    </script>
 </body>
 </html> 

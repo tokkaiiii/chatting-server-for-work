@@ -52,7 +52,10 @@ public class SecurityConfig {
         .oauth2ResourceServer(c -> c.jwt(jwt -> jwt.decoder(jwtDecoder)))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+            .requestMatchers(PathRequest.toH2Console()).permitAll()
             .requestMatchers("/error").permitAll()
+            .requestMatchers("/").permitAll()
+            .requestMatchers("/view/**").permitAll()
             .requestMatchers("/client/signup").permitAll()
             .requestMatchers("/client/login").permitAll()
             .requestMatchers("/client/issueToken").permitAll()

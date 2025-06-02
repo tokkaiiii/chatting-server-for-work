@@ -4,20 +4,23 @@ import com.chat.chattingserverapp.chat.command.ChatRoomCreateCommand;
 import com.chat.chattingserverapp.chat.service.ChatRoomService;
 import java.security.Principal;
 import java.util.UUID;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/chat")
 public record ChatRoomCreateController(
     ChatRoomService chatRoomService
 ) {
 
   @PostMapping("/rooms")
-  public String create(ChatRoomCreateCommand command, Principal principal) {
+  public ResponseEntity<?> create(@RequestBody ChatRoomCreateCommand command, Principal principal) {
     UUID id = UUID.fromString(principal.getName());
-    chatRoomService.createChatRoom(command, id);
-    return "redirect:/chat/rooms";
+    return chatRoomService.createChatRoom(command, id)
+        .map(chatRoomResponse -> ResponseEntity.status(201).body(chatRoomResponse))
+        .orElseGet(ResponseEntity.badRequest()::build);
   }
 }

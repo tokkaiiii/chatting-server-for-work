@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Entity
+@Getter
 public class Message {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
   private Long id;
 
-  @Getter
   private String message;
 
   @JoinColumn(name = "sender_id")
@@ -30,7 +30,6 @@ public class Message {
   @JoinColumn(name = "chat_room_id")
   private ChatRoom chatRoom;
 
-  @Getter
   private final LocalDateTime createdAt = LocalDateTime.now();
 
   protected Message() {
@@ -45,5 +44,4 @@ public class Message {
   public static Message of(String message, Client sender, ChatRoom chatRoom) {
     return new Message(message, sender, chatRoom);
   }
-
 }

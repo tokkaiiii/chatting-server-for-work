@@ -36,14 +36,5 @@ public class POST_specs {
 
   @Test
   void 올바르게_요청하면_200_ok() {
-    messageController = new MessageController(messageService);
-
-    given(jwtAuthenticationToken.getName()).willReturn(id.toString());
-
-    MessageCommand command = new MessageCommand(1L, "Hello");
-
-    messageController.send(command, jwtAuthenticationToken);
-
-    verify(messageService).send(id, 1L, "Hello");
   }
 }

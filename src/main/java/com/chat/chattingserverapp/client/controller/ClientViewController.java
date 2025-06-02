@@ -6,15 +6,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/client")
-public class ClientViewController {
+public record ClientViewController() {
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "login";
-    }
+  @GetMapping("/login")
+  public String loginPage() {
+    return "login";
+  }
 
-    @GetMapping("/signup")
-    public String signupPage() {
-        return "signup";
-    }
+  @GetMapping("/signup")
+  public String signupPage() {
+    return "signup";
+  }
 } 

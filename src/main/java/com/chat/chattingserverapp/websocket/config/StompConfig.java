@@ -29,9 +29,8 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/ws/chat")
-        .setAllowedOrigins("http://localhost:3000","https://chatting-client-for-work-blex.vercel.app")
-        .withSockJS()
-        .setClientLibraryUrl("https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"); // SockJS 클라이언트 URL 추가
+    registry.addEndpoint("/ws")
+        .setAllowedOriginPatterns("*")
+        .withSockJS();
   }
 }

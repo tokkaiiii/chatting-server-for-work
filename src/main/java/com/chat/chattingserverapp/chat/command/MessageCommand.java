@@ -1,8 +1,17 @@
 package com.chat.chattingserverapp.chat.command;
 
+import java.time.LocalDateTime;
+
 public record MessageCommand(
-    Long chatRoomId,
+    Long roomId,
     String sender,
-    String message
+    String content,
+    String type,
+    LocalDateTime timestamp
 ) {
+    public MessageCommand {
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
+    }
 }
