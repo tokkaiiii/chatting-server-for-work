@@ -58,6 +58,7 @@ public class SecurityConfig {
             .requestMatchers("/client/issueToken").permitAll()
             .requestMatchers("/ws-endpoint/**").permitAll()
             .requestMatchers("/ws/**").permitAll()
+            .requestMatchers("/chat/rooms").permitAll()
             .anyRequest().authenticated()
         )
 

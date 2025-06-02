@@ -5,20 +5,27 @@ import com.chat.chattingserverapp.chat.service.ChatRoomService;
 import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
+@Controller
+@RequestMapping("/chat")
 public record ChatRoomListController(
     ChatRoomService chatRoomService
 ) {
 
-  @GetMapping("/chat/rooms")
-  public ResponseEntity<?> list(Principal principal) {
-    UUID id = UUID.fromString(principal.getName());
-    List<ChatRoomListResponse> a = chatRoomService.findAll(id);
-    return ResponseEntity.ok(a);
-  }
+    @GetMapping("/rooms")
+    public String list(Model model, Principal principal) {
+        return "chat-room-list";
+    }
 
+    @GetMapping("/api/rooms")
+    @ResponseBody
+    public List<ChatRoomListResponse> getRooms(Principal principal) {
+        UUID id = UUID.fromString(principal.getName());
+        return chatRoomService.findAll(id);
+    }
 }

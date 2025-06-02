@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Room</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+</head>
+<body>
+<h1>Chat Room</h1>
+<div>
+  <input type="text" id="messageInput" placeholder="Type a message..."/>
+  <button onclick="sendMessage()">Send</button>
+</div>
+<ul id="messages"></ul>
+
+<script type="text/javascript">
+  const username = '[[${username}]]'; // Thymeleaf에서 사용자명 주입
+  const roomId = '[[${roomId}]]'; // Thymeleaf에서 roomId 주입
+
+  // 토큰 발급 요청
+  fetch('/api/auth/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    const token = data.token;
+    connectWebSocket(token);
+  })
+  .catch(error => console.error('Error:', error));
+
+  function connectWebSocket(token) {
+    const stompClient = new StompJs.Client({
+      webSocketFactory: () => new SockJS('/ws-endpoint'),
+      connectHeaders: {
+        Authorization: 'Bearer ' + token
+      },
+      debug: function (str) {
+        console.log('[STOMP]', str);
+      },
+      onConnect: function (frame) {
+        console.log('✅ Connected:', frame);
+
+        // 구독
+        stompClient.subscribe('/topic/room/' + roomId, function (message) {
+          const body = JSON.parse(message.body);
+          showMessage(body.sender + " : " + body.message);
+        });
+      },
+      onStompError: function (frame) {
+        console.error('❌ STOMP error', frame.headers['message'], frame.body);
+      },
+      onWebSocketError: function (event) {
+        console.error('❌ WebSocket error', event);
+      },
+      reconnectDelay: 5000,
+    });
+
+    stompClient.activate(); // 연결 시작
+  }
+
+  function sendMessage() {
+    const message = document.getElementById('messageInput').value;
+    stompClient.publish({
+      destination: "/app/send",
+      body: JSON.stringify({
+        chatRoomId: roomId,
+        sender: username,
+        message: message
+      })
+    });
+  }
+
+  function showMessage(message) {
+    const messages = document.getElementById('messages');
+    const li = document.createElement('li');
+    li.textContent = message;
+    messages.appendChild(li);
+  }
+</script>
+</body>
+</html> 

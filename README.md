@@ -36,7 +36,7 @@ CreateClientCommand {
 - curl 명령 예시
 
 ```bash
-curl -i -X POST 'http://localhost:8080/api/users' \
+curl -i -X POST 'http://localhost:8080/client/signup' \
 -H 'Content-Type: application/json' \
 -d '{
   "email: "test@example.com",
@@ -88,7 +88,7 @@ curl -i -X POST 'http://localhost:8080/api/users' \
 
 ```
 IssueClientTokenCommand {
-  "username": "사용자이름",
+  "email": "test@example.com",
   "password": "비밀번호"
 }
 ```
@@ -96,7 +96,7 @@ IssueClientTokenCommand {
 - curl 명령 예시
 
 ```bash
-curl -i -X POST 'http://localhost:8080/api/users/issueToken' \
+curl -i -X POST 'http://localhost:8080/client/issueToken' \
 -H 'Content-Type: application/json' \
 -d '{
   "username": "사용자이름",
@@ -120,7 +120,6 @@ AccessTokenCarrier {
 - [x] 올바르게 요청하면 200 OK 상태코드를 반환한다
 - [x] 올바르게 요청하면 접근 토큰을 반환한다
 - [x] 접근 토큰은 JWT 형식을 따른다
-- [x] 존재하지 않는 사용자명이 사용되면 400 Bad Request 상태코드를 반환한다
 - [x] 잘못된 비밀번호가 사용되면 400 Bad Request 상태코드를 반환한다
 
 ### 로그인
@@ -134,7 +133,7 @@ AccessTokenCarrier {
 
 ```
 LoginClientCommand {
-  "username": "사용자 이름",
+  "email": "test@example.com",
   "password": "비밀번호"
 }
 
@@ -146,7 +145,7 @@ LoginClientCommand {
 curl -i -X POST 'http://localhost:8080/client/login' \
 -H 'Content-Type: application/json' \
 -d '{
-  "username": "사용자 이름"
+  "email": "test@exmaple.com"
   "password": "비밀번호"
 }'
 ```
@@ -190,13 +189,13 @@ curl -i -X POST 'http://localhost:8080/client/login' \
 요청
 
 - 메서드: `DELETE`
-- URL: `/api/users/logout`
+- URL: `/client/logout`
 - 헤더: `Content-Type: application/json`
 - 본문
 
 ```
 LogoutUserCommand {
-  "name": "사용자 이름"
+  "username": "사용자 이름"
 }
 ```
 
@@ -236,7 +235,7 @@ Authorization: Bearer {accessToken}
 요청
 
 - 메서드: `GET`
-- URL: `/api/users`
+- URL: `/client/users`
 - 헤더: `Content-Type: application/json`
 - 본문 없음
 - 성공 응답
