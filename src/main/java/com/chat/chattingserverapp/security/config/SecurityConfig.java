@@ -72,7 +72,7 @@ public class SecurityConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOriginPatterns(List.of("*")); // 또는 List.of("http://localhost:3000")
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("*"));
+    config.setAllowedHeaders(List.of("http://localhost:3000","https://chatting-client-for-work-blex.vercel.app"));
     config.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
