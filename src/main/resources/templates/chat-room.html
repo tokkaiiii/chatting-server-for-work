@@ -51,7 +51,7 @@
                     <button id="leaveRoomButton" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
                         Leave Room
                     </button>
-                    <a href="/view/chat/rooms" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors">
+                    <a id="backToRoomsButton" href="#" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors">
                         Back to Rooms
                     </a>
                 </div>
@@ -59,14 +59,14 @@
 
             <!-- Chat Container -->
             <div class="flex-1 flex flex-col p-4">
-                <!-- Messages -->
+                <!-- Messages (scrollable) -->
                 <div id="messages" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 mb-4"></div>
 
                 <!-- Connection Status -->
                 <div id="connectionStatus" class="text-sm text-gray-500 mb-2">Connecting...</div>
 
-                <!-- Input Area -->
-                <div class="flex space-x-2">
+                <!-- Input Area (fixed at bottom) -->
+                <div class="flex space-x-2 mt-2 border-t pt-4 bg-white sticky bottom-0 z-10">
                     <textarea
                         id="messageInput"
                         class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
@@ -83,7 +83,6 @@
                         Send
                     </button>
                 </div>
-
                 <!-- Error Message -->
                 <div id="errorMessage" class="mt-2 text-red-500 hidden"></div>
             </div>
@@ -97,6 +96,8 @@
         let roomId = null;
         let username = localStorage.getItem('username');
         const token = localStorage.getItem('token');
+        // 중복 메시지 방지용 Set
+        const renderedMessageSet = new Set();
 
         if (!token) {
             window.location.href = '/client/login';
@@ -114,7 +115,24 @@
             if (stompClient) {
                 stompClient.disconnect();
             }
-            window.location.href = '/view/chat/rooms';
+            // 어드민이면 어드민 채팅리스트로, 아니면 기존대로
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            if (isAdmin) {
+                window.location.href = '/view/admin/chat/rooms';
+            } else {
+                window.location.href = '/view/chat/rooms';
+            }
+        });
+
+        // Back to Rooms 버튼 이벤트 리스너
+        document.getElementById('backToRoomsButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            if (isAdmin) {
+                window.location.href = '/view/admin/chat/rooms';
+            } else {
+                window.location.href = '/view/chat/rooms';
+            }
         });
 
         function connect() {
@@ -154,6 +172,20 @@
             document.getElementById('errorMessage').classList.remove('hidden');
             
             setTimeout(connect, 5000);
+        }
+
+        function getMessageKey(message) {
+            // 메시지의 고유성을 보장할 수 있는 값으로 조합
+            if (message.id !== undefined && message.id !== null) {
+                return String(message.id);
+            }
+            return `${message.sender || message.senderName}-${message.timestamp || message.createdAt}-${message.content || message.message}`;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date)) return '';
+            return date.toLocaleString('ko-KR', { hour12: false });
         }
 
         function loadPreviousMessages() {
@@ -213,19 +245,26 @@
         }
 
         function appendMessage(message) {
+            const key = getMessageKey(message);
+            if (renderedMessageSet.has(key)) return;
+            renderedMessageSet.add(key);
+
             const messagesContainer = document.getElementById('messages');
             const messageElement = document.createElement('div');
-            messageElement.className = `flex ${message.sender === username ? 'justify-end' : 'justify-start'}`;
+            const senderName = message.sender || message.senderName;
+            const content = message.content || message.message;
+            const timestamp = message.timestamp || message.createdAt;
+            messageElement.className = `flex ${senderName === username ? 'justify-end' : 'justify-start'}`;
             
             const messageContent = document.createElement('div');
-            messageContent.className = `max-w-[70%] p-3 ${message.sender === username ? 'message-sent' : 'message-received'}`;
+            messageContent.className = `max-w-[70%] p-3 ${senderName === username ? 'message-sent' : 'message-received'}`;
             
             const messageHeader = document.createElement('div');
             messageHeader.className = 'text-xs opacity-70 mb-1';
-            messageHeader.textContent = `${message.sender} - ${new Date(message.timestamp).toLocaleString()}`;
+            messageHeader.textContent = `${senderName} - ${formatDate(timestamp)}`;
             
             const messageText = document.createElement('div');
-            messageText.textContent = message.content;
+            messageText.textContent = content;
             
             messageContent.appendChild(messageHeader);
             messageContent.appendChild(messageText);

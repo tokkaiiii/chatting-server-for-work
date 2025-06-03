@@ -36,6 +36,11 @@ public class ClientRepositoryAdapter implements ClientRepository{
   }
 
   @Override
+  public boolean existsById(UUID id) {
+    return findById(id).isPresent();
+  }
+
+  @Override
   public Optional<Client> findByEmail(String email) {
     return jpaClientRepository.findByEmail(email);
   }

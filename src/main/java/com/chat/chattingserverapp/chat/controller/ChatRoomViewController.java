@@ -13,6 +13,11 @@ public record ChatRoomViewController() {
     return "chat-room-list";
   }
 
+  @GetMapping("/rooms/admin")
+  public String adminRooms() {
+    return "admin-chat-room-list";
+  }
+
   @GetMapping("/rooms/create")
   public String createRoom() {
     return "chat-room-create";

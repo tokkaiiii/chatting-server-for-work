@@ -12,4 +12,8 @@ public interface ChatRoomRepository {
   Optional<ChatRoom> findById(Long id);
 
   List<ChatRoom> findByClient(Client client);
+
+  List<ChatRoom> findAll();
+
+  void delete(ChatRoom chatRoom);
 }

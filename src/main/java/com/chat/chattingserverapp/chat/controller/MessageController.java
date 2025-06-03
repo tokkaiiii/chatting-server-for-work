@@ -29,9 +29,6 @@ public record MessageController(
     
     UUID id = UUID.fromString(principal.getName());
     messageService.send(id, command.roomId(), command.content());
-    
-    // 메시지를 채팅방의 모든 구독자에게 전송
-    messagingTemplate.convertAndSend("/topic/chat.room." + command.roomId(), command);
   }
 
   @MessageMapping("/chat.addUser")

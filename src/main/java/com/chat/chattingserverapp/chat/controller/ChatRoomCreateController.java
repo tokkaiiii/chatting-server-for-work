@@ -2,6 +2,7 @@ package com.chat.chattingserverapp.chat.controller;
 
 import com.chat.chattingserverapp.chat.command.ChatRoomCreateCommand;
 import com.chat.chattingserverapp.chat.service.ChatRoomService;
+import java.net.URI;
 import java.security.Principal;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;

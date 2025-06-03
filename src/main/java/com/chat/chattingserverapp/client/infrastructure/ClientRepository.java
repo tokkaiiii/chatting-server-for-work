@@ -18,4 +18,6 @@ public interface ClientRepository {
   Optional<Client> findById(UUID id);
 
   Optional<Client> findByEmail(String email);
+
+  boolean existsById(UUID id);
 }

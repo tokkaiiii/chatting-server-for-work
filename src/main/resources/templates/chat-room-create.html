@@ -1,107 +1,111 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Create Chat Room</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Create Chat Room</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+        rel="stylesheet">
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+  </style>
 </head>
 <body class="gradient-bg min-h-screen">
-    <div class="container mx-auto p-4">
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
-            <!-- Header -->
-            <div class="flex items-center space-x-3 mb-6">
-                <div class="bg-blue-500 rounded-full p-2">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-800">Create Chat Room</h1>
-            </div>
-
-            <!-- Error Message -->
-            <div id="errorMessage" class="hidden mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg"></div>
-
-            <!-- Form -->
-            <form id="createRoomForm" class="space-y-4">
-                <div>
-                    <label for="roomName" class="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
-                    <input type="text" id="roomName" name="roomName" required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           placeholder="Enter room name">
-                </div>
-
-                <div class="flex space-x-4">
-                    <button type="submit"
-                            class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                        Create Room
-                    </button>
-                    <a href="/view/chat/rooms"
-                       class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-center">
-                        Cancel
-                    </a>
-                </div>
-            </form>
-        </div>
+<div class="container mx-auto p-4">
+  <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+    <!-- Header -->
+    <div class="flex items-center space-x-3 mb-6">
+      <div class="bg-blue-500 rounded-full p-2">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4v16m8-8H4"></path>
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-800">Create Chat Room</h1>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/client/login';
-                return;
-            }
+    <!-- Error Message -->
+    <div id="errorMessage"
+         class="hidden mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg"></div>
 
-            const form = document.getElementById('createRoomForm');
-            const errorMessage = document.getElementById('errorMessage');
+    <!-- Form -->
+    <form id="createRoomForm" class="space-y-4">
+      <div>
+        <label for="roomName" class="block text-sm font-medium text-gray-700 mb-1">Room Name</label>
+        <input type="text" id="roomName" name="roomName" required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+               placeholder="Enter room name">
+      </div>
 
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const roomName = document.getElementById('roomName').value.trim();
-                if (!roomName) {
-                    errorMessage.textContent = 'Please enter a room name';
-                    errorMessage.classList.remove('hidden');
-                    return;
-                }
+      <div class="flex space-x-4">
+        <button type="submit"
+                class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+          Create Room
+        </button>
+        <a href="/view/chat/rooms"
+           class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-center">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
 
-                try {
-                    const response = await fetch('/chat/rooms', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ roomName: roomName }),
-                        credentials: 'include'
-                    });
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/client/login';
+      return;
+    }
 
-                    if (!response.ok) {
-                        if (response.status === 401) {
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('userId');
-                            localStorage.removeItem('username');
-                            window.location.href = '/client/login';
-                            return;
-                        }
-                        throw new Error('Failed to create chat room');
-                    }
+    const form = document.getElementById('createRoomForm');
+    const errorMessage = document.getElementById('errorMessage');
 
-                    const result = await response.json();
-                    window.location.href = `/view/chat/rooms/${result.chatRoomId}`;
-                } catch (error) {
-                    console.error('Error creating chat room:', error);
-                    errorMessage.textContent = error.message;
-                    errorMessage.classList.remove('hidden');
-                }
-            });
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const roomName = document.getElementById('roomName').value.trim();
+      if (!roomName) {
+        errorMessage.textContent = 'Please enter a room name';
+        errorMessage.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const response = await fetch('/chat/rooms', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({roomName: roomName}),
+          credentials: 'include'
         });
-    </script>
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
+            window.location.href = '/client/login';
+            return;
+          }
+          throw new Error('Failed to create chat room');
+        }
+
+        await response.json().then(result =>
+            window.location.href = `/view/chat/rooms/${result.chatRoomId}`
+        )
+      } catch (error) {
+        console.error('Error creating chat room:', error);
+        errorMessage.textContent = error.message;
+        errorMessage.classList.remove('hidden');
+      }
+    });
+  });
+</script>
 </body>
 </html> 

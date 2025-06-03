@@ -65,6 +65,8 @@ public class SecurityConfig {
             .requestMatchers("/admin/login").permitAll()
             .requestMatchers("/ws-endpoint/**").permitAll()
             .requestMatchers("/ws/**").permitAll()
+            .requestMatchers("/view/chat/rooms/admin").permitAll()
+            .requestMatchers("/chat/rooms/for-admin").authenticated()
 //            .requestMatchers(GET,"/chat/rooms").permitAll()
             .anyRequest().authenticated()
         )

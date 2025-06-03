@@ -29,4 +29,14 @@ public class ChatRoomRepositoryAdapter implements ChatRoomRepository{
   public List<ChatRoom> findByClient(Client client) {
     return jpaChatRoomRepository.findByClient(client);
   }
+
+  @Override
+  public List<ChatRoom> findAll() {
+    return jpaChatRoomRepository.findAll();
+  }
+
+  @Override
+  public void delete(ChatRoom chatRoom) {
+    jpaChatRoomRepository.delete(chatRoom);
+  }
 }
