@@ -9,11 +9,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.chat.chattingserverapp.admin.domain.Admin;
-import com.chat.chattingserverapp.admin.infrastructure.AdminRepositoryAdapter;
+import com.chat.chattingserverapp.admin.infrastructure.AdminRepository;
 import com.chat.chattingserverapp.api.ChattingApiTest;
 import com.chat.chattingserverapp.client.query.IssueClientToken;
 import com.chat.chattingserverapp.client.result.AccessTokenCarrier;
-import com.chat.chattingserverapp.utils.PasswordGenerator;
 import com.chat.chattingserverapp.utils.TestFixture;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class POST_specs {
 
 
   @MockitoBean
-  private AdminRepositoryAdapter adminRepository;
+  private AdminRepository adminRepository;
 
   @AfterEach
   void tearDown() {

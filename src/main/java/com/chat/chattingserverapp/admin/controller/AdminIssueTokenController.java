@@ -19,7 +19,7 @@ public record AdminIssueTokenController(
 
   @PostMapping("/admin/issueToken")
   public ResponseEntity<?> issueToken(@RequestBody IssueAdminToken query) {
-    return adminService.findByEmail(query)
+    return adminService.findByEmail(query.email(),query.password())
         .map(this::composeToken)
         .map(AccessTokenCarrier::new)
         .map(ResponseEntity::ok)

@@ -1,5 +1,9 @@
 package com.chat.chattingserverapp.utils;
 
+import static com.chat.chattingserverapp.utils.EmailGenerator.generateEmail;
+import static com.chat.chattingserverapp.utils.PasswordGenerator.generatePassword;
+import static com.chat.chattingserverapp.utils.UsernameGenerator.generateUsername;
+
 import com.chat.chattingserverapp.chat.command.ChatRoomCreateCommand;
 import com.chat.chattingserverapp.chat.response.ChatRoomResponse;
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
@@ -42,16 +46,27 @@ public record TestFixture(TestRestTemplate client) {
     return carrier.accessToken();
   }
 
+  public void createClientThenSetAsDefaultUser() {
+    String email = generateEmail();
+    String username = generateUsername();
+    String password = generatePassword();
+    createClient(email, username, password);
+    setClientAsDefaultUser(email, password);
+  }
+
   public void setClientAsDefaultUser(String email, String password) {
     String token = issueClientToken(email, password);
+    setDefaultAuthorization(token);
+  }
+
+  private void setDefaultAuthorization(String token) {
     RestTemplate template = client.getRestTemplate();
-    template.getInterceptors().add((request, body, execution) -> {
+    template.getInterceptors().addFirst((request, body, execution) -> {
       if (request.getHeaders().containsKey("Authorization") == false) {
         request.getHeaders().setBearerAuth(token);
       }
 
       return execution.execute(request, body);
     });
-
   }
 }
