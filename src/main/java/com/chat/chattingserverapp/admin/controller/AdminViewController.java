@@ -1,22 +1,12 @@
-package com.chat.chattingserverapp.auth.controller;
+package com.chat.chattingserverapp.admin.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/view/auth")
+@RequestMapping("/view")
 @Controller
-public record AuthViewController() {
-
-  @GetMapping("/login")
-  public String login() {
-    return "login";
-  }
-
-  @GetMapping("/signup")
-  public String signup() {
-    return "signup";
-  }
+public record AdminViewController() {
 
   @GetMapping("/admin/login")
   public String adminLogin() {
