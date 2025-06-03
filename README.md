@@ -123,7 +123,6 @@ AccessTokenCarrier {
 - [x] 존재하지 않는 이메일이 사용되면 `400 Bad Request` 상태코드를 반환한다
 - [x] 잘못된 비밀번호가 사용되면 `400 Bad Request` 상태코드를 반환한다
 
-
 ### 로그인
 
 요청
@@ -297,6 +296,114 @@ Authorization: Bearer {accessToken}
 }
 ```
 
+### 관리자 토큰발행
+
+요청
+
+- 메서드: `POST`
+- URL: `/admin/issueToken`
+- 헤더: `Content-Type: application/json`
+- 본문
+
+```
+IssueAdminToken {
+  "email": "test@example.com",
+  "password": "비밀번호"
+}
+```
+
+- curl 명령 예시
+
+```bash
+curl -i -X POST 'http://localhost:8080/admin/issueToken' \
+-H 'Content-Type: application/json' \
+-d '{
+  "email": "test@example.com",
+  "password": "비밀번호"
+}'
+```
+
+성공 응답
+
+- 상태코드: `200
+- OK`
+
+```
+AccessTokenCarrier {
+  "accessToken": "사용자 토큰"
+}
+```
+
+테스트
+
+- [x] 올바르게 요청하면 `200 OK` 상태코드를 반환한다
+- [x] 올바르게 요청하면 접근 토큰을 반환한다
+- [x] 접근 토큰은 JWT 형식을 따른다
+- [x] 존재하지 않는 이메일이 사용되면 `400 Bad Request` 상태코드를 반환한다
+- [x] 잘못된 비밀번호가 사용되면 `400 Bad Request` 상태코드를 반환한다
+
+### 로그인
+
+요청
+
+- 메서드: `POST`
+- URL: `/admin/login`
+- 헤더: `Content-Type: application/json`
+- 본문
+
+```
+LoginAdminCommand {
+  "email": "test@example.com",
+  "password": "비밀번호"
+}
+
+```
+
+- curl 명령 예시
+
+```bash
+curl -i -X POST 'http://localhost:8080/admin/login' \
+-H 'Content-Type: application/json' \
+-d '{
+  "email": "test@exmaple.com"
+  "password": "비밀번호"
+}'
+```
+
+성공 응답
+
+- 상태코드: `200 OK`
+
+```json
+{
+  "id": "사용자 ID",
+  "username": "사용자 이름",
+  "createdAt": "생성일시"
+}
+```
+
+정책
+
+- 비밀번호는 암호화되어 저장되어 있다.
+- 로그인 시 사용자 이름을 반환한다.
+- 로그인 시 사용자 ID는 세션에 저장된다.
+- 로그인 시 사용자 이름은 세션에 저장된다.
+- 로그인 시 세션에 사용자 ID와 사용자 이름이 저장되어야 한다.
+- 로그인 시 세션에 사용자 ID와 사용자 이름이 저장되어 있지 않으면 `401 Unauthorized` 상태코드를 반환한다.
+- 로그인 시 세션에 사용자 ID와 사용자 이름이 저장되어 있으면 `200 OK` 상태코드를 반환한다.
+
+테스트
+
+- [ ] 올바르게 요청하면 `200 OK` 상태코드를 반환한다
+- [ ] 이메일 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [ ] 이메일 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [ ] 비밀번호 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [ ] 비밀번호 속성이 올바른 형식을 따르지 않으면 `400 Bad Request` 상태코드를 반환한다
+- [ ] 사용자 이름이 존재하지 않으면 `401 Unauthorized` 상태코드를 반환한다
+- [ ] 비밀번호가 일치하지 않으면 `401 Unauthorized` 상태코드를 반환한다
+- [ ] 로그인 시 사용자 이름을 반환한다
+- [ ] 로그인 시 생성일시를 반환한다
+
 ### 채팅방 목록 조회
 
 요청
@@ -310,7 +417,9 @@ Authorization: Bearer {accessToken}
 ```
 GET /chat/rooms
 ```
+
 - 성공 응답
+
 ```json
 {
   "id": "채팅방 ID",
@@ -320,7 +429,9 @@ GET /chat/rooms
   "unread": 1
 }
 ```
+
 테스트
+
 - [x] 올바르게 요청하면 `200 ok` 상태코드를 반환한다
 - [x] 접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다
 - [ ] 채티방 목록을 반환한다

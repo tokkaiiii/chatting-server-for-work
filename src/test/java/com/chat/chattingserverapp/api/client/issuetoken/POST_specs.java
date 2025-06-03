@@ -8,14 +8,12 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.chat.chattingserverapp.api.ChattingApiTest;
-import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.query.IssueClientToken;
 import com.chat.chattingserverapp.client.result.AccessTokenCarrier;
 import com.chat.chattingserverapp.utils.TestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 
 @ChattingApiTest
 @DisplayName("POST /client/issueToken")

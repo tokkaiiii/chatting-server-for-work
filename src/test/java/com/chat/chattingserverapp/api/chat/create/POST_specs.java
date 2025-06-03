@@ -54,14 +54,14 @@ public class POST_specs {
   @DisplayName("접근 토큰을 사용하지 않으면 `401 Unauthorized` 상태코드를 반환한다")
   @Test
   void 접근_토큰을_사용하지_않으면_401_Unauthorized_상태코드를_반환한다(
-      @Autowired TestRestTemplate client
+      @Autowired TestFixture fixture
   ) {
     // Arrange
     String roomName = "Test Room";
     ChatRoomCreateCommand command = new ChatRoomCreateCommand(roomName);
 
     // Act
-    var response = client.postForEntity(
+    var response =  fixture.client().postForEntity(
         "/chat/rooms",
         command,
         Void.class
@@ -74,28 +74,22 @@ public class POST_specs {
   @DisplayName("채팅방 이름 속성이 지정되지 않으면 `400 Bad Request` 상태코드를 반환한다")
   @Test
   void 채팅방_이름_속성이_지정되지_않으면_400_Bad_Request_상태코드를_반환한다(
-      @Autowired TestRestTemplate client
+      @Autowired TestFixture fixture
   ) {
     // Arrange
     String email = generateEmail();
     String username = generateUsername();
     String password = generatePassword();
-    client.postForEntity("/client/signup", new CreateClientCommand(email, username, password),
-        Void.class);
-    AccessTokenCarrier carrier = client.postForObject(
-        "/client/issueToken",
-        new IssueClientToken(username, password),
-        AccessTokenCarrier.class
-    );
-    String token = carrier.accessToken();
+    fixture.createClient(email, username, password);
+
+    fixture.setClientAsDefaultUser(email, password);
 
     ChatRoomCreateCommand command = new ChatRoomCreateCommand(null); // 채팅방 이름이 null로 설정됨
 
     // Act
-    var response = client.exchange(
-        post("/chat/rooms")
-            .header("Authorization", " Bearer " + token)
-            .body(command),
+    var response = fixture.client().postForEntity(
+        "/chat/rooms",
+        command,
         Void.class
     );
 

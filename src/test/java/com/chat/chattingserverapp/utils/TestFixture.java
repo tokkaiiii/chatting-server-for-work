@@ -5,10 +5,19 @@ import com.chat.chattingserverapp.chat.response.ChatRoomResponse;
 import com.chat.chattingserverapp.client.command.CreateClientCommand;
 import com.chat.chattingserverapp.client.query.IssueClientToken;
 import com.chat.chattingserverapp.client.result.AccessTokenCarrier;
+import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 
 public record TestFixture(TestRestTemplate client) {
+
+  public static TestFixture create(Environment environment) {
+    var client = new TestRestTemplate();
+    var uriTemplateHandler = new LocalHostUriTemplateHandler(environment);
+    client.setUriTemplateHandler(uriTemplateHandler);
+    return new TestFixture(client);
+  }
 
   public void createClient(String email, String username, String password) {
     client.postForEntity("/client/signup", new CreateClientCommand(email, username, password),

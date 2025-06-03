@@ -19,6 +19,11 @@ public record ChatRoomCreateController(
   @PostMapping("/rooms")
   public ResponseEntity<?> create(@RequestBody ChatRoomCreateCommand command, Principal principal) {
     UUID id = UUID.fromString(principal.getName());
+
+    if (command.roomName() == null || command.roomName().isBlank()) {
+      return ResponseEntity.badRequest().build();
+    }
+
     return chatRoomService.createChatRoom(command, id)
         .map(chatRoomResponse -> ResponseEntity.status(201).body(chatRoomResponse))
         .orElseGet(ResponseEntity.badRequest()::build);

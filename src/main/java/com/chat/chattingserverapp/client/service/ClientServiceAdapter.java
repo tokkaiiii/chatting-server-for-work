@@ -34,12 +34,6 @@ public class ClientServiceAdapter implements ClientService {
         .map(ClientResponse::from);
   }
 
-  @Override
-  public Optional<ClientResponse> findByUsername(IssueClientToken query) {
-    return clientRepository.findByUsername(query.email())
-        .filter(client -> client.decodePassword(passwordEncoder, query.password()))
-        .map(ClientResponse::from);
-  }
 
   @Override
   public Optional<ClientResponse> findById(UUID id) {

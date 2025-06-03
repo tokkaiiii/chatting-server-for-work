@@ -1,14 +1,16 @@
 package com.chat.chattingserverapp.api;
 
 import com.chat.chattingserverapp.utils.TestFixture;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.core.env.Environment;
 
 public class TestFixtureConfig {
 
   @Bean
-  public TestFixture textFixture(TestRestTemplate client) {
-    return new TestFixture(client);
+  @Scope("prototype")
+  public TestFixture textFixture(Environment environment) {
+    return TestFixture.create(environment);
   }
 
 }
