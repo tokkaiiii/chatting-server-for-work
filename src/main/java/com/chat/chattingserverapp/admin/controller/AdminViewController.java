@@ -12,4 +12,5 @@ public record AdminViewController() {
   public String adminLogin() {
     return "admin-login";
   }
+
 } 
