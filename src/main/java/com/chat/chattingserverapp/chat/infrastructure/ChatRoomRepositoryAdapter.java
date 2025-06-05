@@ -39,4 +39,9 @@ public class ChatRoomRepositoryAdapter implements ChatRoomRepository{
   public void delete(ChatRoom chatRoom) {
     jpaChatRoomRepository.delete(chatRoom);
   }
+
+  @Override
+  public Optional<ChatRoom> findByChatRoomName(String chatRoomName) {
+    return jpaChatRoomRepository.findByRoomName(chatRoomName);
+  }
 }

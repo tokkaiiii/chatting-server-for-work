@@ -16,4 +16,6 @@ public interface ChatRoomRepository {
   List<ChatRoom> findAll();
 
   void delete(ChatRoom chatRoom);
+
+  Optional<ChatRoom> findByChatRoomName(String chatRoomName);
 }

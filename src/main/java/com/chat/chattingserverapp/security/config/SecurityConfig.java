@@ -1,6 +1,5 @@
 package com.chat.chattingserverapp.security.config;
 
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.crypto.factory.PasswordEncoderFactories.createDelegatingPasswordEncoder;
 
 import com.chat.chattingserverapp.security.JwtKeyHolder;
@@ -11,12 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -82,7 +78,6 @@ public class SecurityConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowedOriginPatterns(List.of("*")); // 또는 List.of("http://localhost:3000")
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("http://localhost:3000","https://chatting-client-for-work-blex.vercel.app"));
     config.setAllowCredentials(true);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

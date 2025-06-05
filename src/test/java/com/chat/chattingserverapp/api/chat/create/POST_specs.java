@@ -5,19 +5,14 @@ import static com.chat.chattingserverapp.utils.PasswordGenerator.generatePasswor
 import static com.chat.chattingserverapp.utils.UsernameGenerator.generateUsername;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.http.RequestEntity.post;
 
 import com.chat.chattingserverapp.api.ChattingApiTest;
 import com.chat.chattingserverapp.chat.command.ChatRoomCreateCommand;
 import com.chat.chattingserverapp.chat.response.ChatRoomResponse;
-import com.chat.chattingserverapp.client.command.CreateClientCommand;
-import com.chat.chattingserverapp.client.query.IssueClientToken;
-import com.chat.chattingserverapp.client.result.AccessTokenCarrier;
 import com.chat.chattingserverapp.utils.TestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 
 @ChattingApiTest

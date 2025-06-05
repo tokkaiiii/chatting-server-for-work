@@ -1,19 +1,16 @@
 package com.chat.chattingserverapp.chat.service;
 
+import com.chat.chattingserverapp.admin.domain.Admin;
+import com.chat.chattingserverapp.admin.service.AdminService;
 import com.chat.chattingserverapp.chat.command.ChatRoomCreateCommand;
 import com.chat.chattingserverapp.chat.domain.ChatRoom;
 import com.chat.chattingserverapp.chat.domain.Message;
-import com.chat.chattingserverapp.chat.domain.MessageType;
-import com.chat.chattingserverapp.chat.domain.RoomType;
 import com.chat.chattingserverapp.chat.infrastructure.ChatRoomRepository;
 import com.chat.chattingserverapp.chat.infrastructure.MessageRepository;
 import com.chat.chattingserverapp.chat.response.ChatRoomListResponse;
 import com.chat.chattingserverapp.chat.response.ChatRoomResponse;
 import com.chat.chattingserverapp.client.domain.Client;
 import com.chat.chattingserverapp.client.infrastructure.ClientRepository;
-import com.chat.chattingserverapp.admin.domain.Admin;
-import com.chat.chattingserverapp.admin.service.AdminService;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ChatRoomServiceAdapter implements ChatRoomService {
 
   private final ChatRoomRepository chatRoomRepository;
@@ -54,15 +52,15 @@ public class ChatRoomServiceAdapter implements ChatRoomService {
   }
 
   @Override
-  @Transactional(readOnly = true)
   public List<ChatRoomResponse> findAllRooms() {
     return chatRoomRepository.findAll().stream()
         .map(ChatRoomResponse::from)
         .toList();
   }
 
+
+
   @Override
-  @Transactional(readOnly = true)
   public ChatRoomResponse findById(UUID roomId) {
     return ChatRoomResponse.from(
         chatRoomRepository.findById(Long.valueOf(roomId.toString()))
@@ -80,7 +78,6 @@ public class ChatRoomServiceAdapter implements ChatRoomService {
   @Override
   public Optional<ChatRoomResponse> createChatRoom(ChatRoomCreateCommand command, UUID clientId) {
     Client client = getClientFrom(clientId);
-    
     ChatRoom chatRoom = command.toChatRoom(client);
     Optional<ChatRoom> savedChatRoom = chatRoomRepository.save(chatRoom);
     
